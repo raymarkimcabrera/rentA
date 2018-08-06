@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/mainGroup"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/menuItemHome"
+            android:title="@string/home"/>
+
+        <item
+            android:id="@+id/menuMessages"
+            android:title="@string/messages"/>
+
+
+        <item
+            android:id="@+id/menuHistory"
+            android:title="@string/history"/>
+
+
+        <item
+            android:id="@+id/menuPayment"
+            android:title="@string/payment"/>
+
+
+        <item
+            android:id="@+id/menuSchedule"
+            android:title="@string/schedule"/>
+
+        <item
+            android:id="@+id/menuNotifications"
+            android:title="@string/notifications"/>
+
+        <item
+            android:id="@+id/menuDriveWithRentA"
+            android:title="@string/drive_with_rent_a"/>
+        <item
+            android:id="@+id/menuSettings"
+            android:title="@string/settings"/>
+        <item
+            android:id="@+id/menuLogout"
+            android:title="Logout"/>
+
+    </group>
+
+    <group>
+        <item
+            android:id="@+id/menuAppVersion"
+            android:enabled="false"
+            android:title="App Version"
+            />
+    </group>
+
+</menu>

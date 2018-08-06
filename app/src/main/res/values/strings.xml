@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Rent-A</string>
+    <string name="home">Home</string>
+    <string name="messages">Messages</string>
+    <string name="history">History</string>
+    <string name="payment">Payment</string>
+    <string name="schedule">Schedule</string>
+    <string name="notifications">Notifications</string>
+    <string name="drive_with_rent_a">Drive with Rent-A</string>
+    <string name="settings">Settings</string>
 </resources>
