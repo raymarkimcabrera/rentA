@@ -5,15 +5,25 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.skuld.user.rent_a.BaseActivity;
+import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
 
+import butterknife.BindView;
+
 public class DashboardActivity extends BaseActivity {
+
+    @BindView(R.id.navigationView)
+    NavigationView mNavigationView;
+
+    @BindView(R.id.drawerLayout)
+    DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +51,7 @@ public class DashboardActivity extends BaseActivity {
 
     private void initNavigationMenu() {
         mNavigationView.getMenu().clear();
-        mNavigationView.inflateMenu(R.menu.drawe_logged_in);
+        mNavigationView.inflateMenu(R.menu.drawer_logged_in);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -51,63 +61,12 @@ public class DashboardActivity extends BaseActivity {
                     case R.id.menuItemHome:
                         break;
 
-                    case R.id.menuItemRewards:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(TutorialPageActivity.newIntent(mContext, TutorialPageActivity.FALLBACK_REWARD));
-                        break;
-
-                    case R.id.menuItemStores:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(StoresListActivity.newIntent(mContext));
-                        break;
-
-                    case R.id.menuItemGift:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(TutorialPageActivity.newIntent(mContext, TutorialPageActivity.FALLBACK_GIFT));
-                        break;
-
-                    case R.id.menuItemOrderNow:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(StoreBranchToOrderActivity.newIntent(mContext, StoreBranchToOrderActivity.NO_PROD_ID));
-                        break;
-
-                    case R.id.menuItemPromos:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(PromosListActivity.newIntent(mContext));
-                        break;
-
-                    case R.id.menuItemTransactionHistory:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(UserFunction.isLoggedIn(mContext) ? TransactionHistoryActivity.newIntent(mContext) : LoginActivity.newIntent(mContext));
-                        break;
-                    case R.id.menuItemInformation:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(SplashScreenActivity.newIntent(mContext));
-                        break;
-
-                    case R.id.menuItemSettings:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity((UserFunction.isLoggedIn(mContext)) ? SettingsLoggedInActivity.newIntent(mContext) : SettingsNotLoggedInActivity.newIntent(mContext));
-                        break;
-
-                    case R.id.menuItemLogout:
-                        UserFunction.logout(mContext);
-                        break;
-
-                    case R.id.menuItemLogin:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(LoginActivity.newIntent(mContext));
-                        break;
-
-                    case R.id.menuItemRegister:
-                        if (FigaroCoffeeBase.isNetworkAvailable(mContext))
-                            startActivity(RegisterActivity.newIntent(mContext));
-                        break;
                 }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return false;
             }
         });
+
         Menu menu = mNavigationView.getMenu();
         MenuItem appVersion = menu.findItem(R.id.menuAppVersion);
         appVersion.setTitle("Version " + BuildConfig.VERSION_NAME);
