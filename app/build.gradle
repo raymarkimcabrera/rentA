@@ -1,14 +1,18 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+
+
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.skuld.user.rent_a"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -20,17 +24,28 @@ android {
             resValue "string", "fb_login_protocol_scheme", "fb237773163519396"
         }
     }
+
+    dexOptions {
+        jumboMode = true
+        javaMaxHeapSize "4g"
+    }
+
+    packagingOptions {  /**To fix ndk error*/
+        doNotStrip '*/mips/*.so'
+    }
+
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation(name:'HERE-sdk', ext:'aar')
+    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:design:27.1.0'
 
-    implementation 'com.google.android.gms:play-services-auth:11.6.2'
-    implementation 'com.google.firebase:firebase-messaging:11.6.2'
+
+    implementation 'com.google.android.gms:play-services-auth:11.0.2'
+    implementation 'com.google.firebase:firebase-messaging:11.0.2'
+
 
     implementation 'com.facebook.android:facebook-login:[4,5)'
 
@@ -47,5 +62,4 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.7.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
 
-    implementation 'com.google.android.gms:play-services-maps:11.6.2'
 }
