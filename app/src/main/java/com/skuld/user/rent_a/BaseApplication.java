@@ -15,8 +15,7 @@ public class BaseApplication extends Application {
         super.onCreate();
 
         mApp = this;
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(this);
+
     }
 
 }
