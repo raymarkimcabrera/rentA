@@ -8,7 +8,11 @@
     android:fitsSystemWindows="true"
     tools:context=".activity.DashboardActivity">
 
-
+    <fragment
+        class="com.here.android.mpa.mapping.MapFragment"
+        android:id="@+id/mapfragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

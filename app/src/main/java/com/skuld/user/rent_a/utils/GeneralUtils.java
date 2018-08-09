@@ -10,4 +10,6 @@ public class GeneralUtils {
     public static void hideTitleBar(Activity activity){
         activity.requestWindowFeature(Window.FEATURE_NO_TITLE);
     }
+
+
 }

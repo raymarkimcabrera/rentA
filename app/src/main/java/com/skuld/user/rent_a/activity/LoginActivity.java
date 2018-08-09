@@ -1,8 +1,10 @@
 package com.skuld.user.rent_a.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -33,35 +35,34 @@ import java.util.Arrays;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class LoginActivity extends AppCompatActivity{
+public class LoginActivity extends BaseActivity {
 
     private final static String TAG = LoginActivity.class.getSimpleName();
 
 
+    @BindView(R.id.loginButton)
+    AppCompatButton mLoginButton;
 
     private String mFbToken;
-
     private CallbackManager callbackManager;
     private PrefUtil prefUtil;
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
-        setContentView(R.layout.activity_login);
 
+        mContext = this;
         prefUtil = new PrefUtil(this);
-        LoginButton mLoginButton = (LoginButton) findViewById(R.id.login_button);
+        LoginButton mLoginButton = (LoginButton) findViewById(R.id.fb_login);
+
         mLoginButton.setReadPermissions("email");
         mLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
 
-
-                String accessToken = loginResult.getAccessToken().getToken();
-
-                // save accessToken to SharedPreference
-                prefUtil.saveAccessToken(accessToken);
 
                 GraphRequest request = GraphRequest.newMeRequest(
                         loginResult.getAccessToken(),
@@ -71,8 +72,16 @@ public class LoginActivity extends AppCompatActivity{
                                                     GraphResponse response) {
 
                                 // Getting FB User Data
-                                Bundle facebookData = getFacebookData(jsonObject);
+//                                Bundle facebookData = getFacebookData(jsonObject);
+                                try {
+                                    Log.i(TAG, "onCompleted: " + jsonObject.getString("email"));
+                                    Toast.makeText(LoginActivity.this, "" + jsonObject.getString("email"), Toast.LENGTH_SHORT).show();
+                                    finish();
+                                    startActivity(DashboardActivity.newIntent(mContext));
 
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
                             }
                         });
@@ -85,72 +94,22 @@ public class LoginActivity extends AppCompatActivity{
 
 
             @Override
-            public void onCancel () {
+            public void onCancel() {
                 Log.d(TAG, "Login attempt cancelled.");
             }
 
             @Override
-            public void onError (FacebookException e){
+            public void onError(FacebookException e) {
                 e.printStackTrace();
                 Log.d(TAG, "Login attempt failed.");
-                deleteAccessToken();
+                LoginManager.getInstance().logOut();
             }
         });
     }
 
-    private void deleteAccessToken() {
-        AccessTokenTracker accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(
-                    AccessToken oldAccessToken,
-                    AccessToken currentAccessToken) {
-
-                if (currentAccessToken == null){
-                    //User logged out
-                    prefUtil.clearToken();
-                    LoginManager.getInstance().logOut();
-                }
-            }
-        };
-    }
-
-    private Bundle getFacebookData(JSONObject object) {
-        Bundle bundle = new Bundle();
-
-        try {
-            String id = object.getString("id");
-            URL profile_pic;
-            try {
-                profile_pic = new URL("https://graph.facebook.com/" + id + "/picture?type=large");
-                Log.i("profile_pic", profile_pic + "");
-                bundle.putString("profile_pic", profile_pic.toString());
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-            bundle.putString("idFacebook", id);
-            if (object.has("first_name"))
-                bundle.putString("first_name", object.getString("first_name"));
-            if (object.has("last_name"))
-                bundle.putString("last_name", object.getString("last_name"));
-            if (object.has("email")){
-                bundle.putString("email", object.getString("email"));
-                Log.i(TAG, "getFacebookData: " + object.getString("email"));
-            }
-            if (object.has("gender"))
-                bundle.putString("gender", object.getString("gender"));
-
-
-            prefUtil.saveFacebookUserInfo(object.getString("first_name"),
-                    object.getString("last_name"),object.getString("email"),
-                    object.getString("gender"), profile_pic.toString());
-
-        } catch (Exception e) {
-            Log.d(TAG, "BUNDLE Exception : "+e.toString());
-        }
-
-        return bundle;
+    @Override
+    protected int setLayoutResourceID() {
+        return R.layout.activity_login;
     }
 
     @Override
@@ -158,7 +117,9 @@ public class LoginActivity extends AppCompatActivity{
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-
-
-
+    @OnClick(R.id.loginButton)
+    void onClick(){
+        finish();
+        startActivity(DashboardActivity.newIntent(mContext));
+    }
 }

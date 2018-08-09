@@ -66,6 +66,7 @@
         </LinearLayout>
 
         <android.support.v7.widget.AppCompatButton
+            android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="Log In"
@@ -118,7 +119,7 @@
             android:layout_height="wrap_content">
 
             <com.facebook.login.widget.LoginButton
-                android:id="@+id/login_button"
+                android:id="@+id/fb_login"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
