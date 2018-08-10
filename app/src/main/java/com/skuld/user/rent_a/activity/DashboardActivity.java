@@ -29,7 +29,7 @@ import com.skuld.user.rent_a.R;
 
 import butterknife.BindView;
 
-public class DashboardActivity extends BaseActivity implements OnEngineInitListener{
+public class DashboardActivity extends BaseActivity implements OnEngineInitListener {
 
     public static final int REQUEST_CODE_PERMISSION_STORAGE = 101;
     public static final int REQUEST_CODE_PERMISSION_LOCATION = 102;
@@ -53,10 +53,9 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
         initializeMaps();
 
-
     }
 
-    public static Intent newIntent(Context context){
+    public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
         return intent;
     }
@@ -70,13 +69,14 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private void initialize() {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_black_24dp);
+            actionBar.setHomeAsUpIndicator(R.drawable.img_menu);
             actionBar.setTitle(R.string.app_name);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
     private void initNavigationMenu() {
+        mNavigationView.getMenu().clear();
         mNavigationView.inflateMenu(R.menu.drawer_logged_in);
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -99,7 +99,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     }
 
-    private void initializeMaps(){
+    private void initializeMaps() {
 
         // initialize the Map Fragment and
         // retrieve the map that is associated to the fragment
@@ -113,19 +113,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 getFragmentManager().findFragmentById(R.id.mapfragment);
 
         mMapFragment.init(this);
-
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(mContext, android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-
-        }
-    }
 
     @Override
     public void onEngineInitializationCompleted(Error error) {
@@ -153,11 +142,6 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
             double zoom = mMap.getZoomLevel();
         } else {
             Log.i("Map Initialization", "onEngineInitializationCompleted: " + error);
-            checkForPermissions(REQUEST_CODE_PERMISSION_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION);
-            checkForPermissions(REQUEST_CODE_PERMISSION_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE);
-            mMapFragment.init(this);
         }
     }
 }

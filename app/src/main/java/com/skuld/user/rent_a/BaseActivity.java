@@ -10,13 +10,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.skuld.user.rent_a.activity.DashboardActivity;
+import com.skuld.user.rent_a.views.MapsView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity{
 
     protected Context mContext;
 
@@ -85,7 +88,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isNeverClicked(@NonNull String[] permissions) {
+    protected boolean isNeverClicked(@NonNull String[] permissions) {
         for (String permission : permissions) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
                 //denied

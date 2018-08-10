@@ -120,6 +120,6 @@ public class LoginActivity extends BaseActivity {
     @OnClick(R.id.loginButton)
     void onClick(){
         finish();
-        startActivity(DashboardActivity.newIntent(mContext));
+        startActivity(PermissionRequestActivity.newIntent(mContext));
     }
 }
