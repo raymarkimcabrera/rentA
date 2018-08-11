@@ -3,33 +3,33 @@ package com.skuld.user.rent_a.activity;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 
-import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
-import com.here.android.mpa.mapping.MapView;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
 
+import java.lang.ref.WeakReference;
+
 import butterknife.BindView;
 
-public class DashboardActivity extends BaseActivity implements OnEngineInitListener {
+public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener {
+
+    private static final String TAG = DashboardActivity.class.getSimpleName();
 
     public static final int REQUEST_CODE_PERMISSION_STORAGE = 101;
     public static final int REQUEST_CODE_PERMISSION_LOCATION = 102;
@@ -43,6 +43,11 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @BindView(R.id.findVehicleButton)
     Button mFindVehicleButton;
 
+
+    private Map mMap;
+    private boolean paused;
+    public PositioningManager posManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +58,49 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
         initializeMaps();
 
+        posManager = PositioningManager.getInstance();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (posManager != null) {
+            // Cleanup
+            posManager.removeListener(
+                    this);
+        }
+        mMap = null;
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        paused = false;
+        if (posManager != null) {
+            getLocation();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (posManager != null) {
+            posManager.stop();
+        }
+        super.onPause();
+        paused = true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (mDrawerLayout.isDrawerOpen(GravityCompat.START))
+                    mDrawerLayout.closeDrawer(GravityCompat.START);
+                else if (!mDrawerLayout.isDrawerVisible(GravityCompat.START))
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public static Intent newIntent(Context context) {
@@ -89,7 +137,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
                 }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
-                return false;
+                return true;
             }
         });
 
@@ -123,25 +171,49 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
         if (error == OnEngineInitListener.Error.NONE) {
             // now the map is ready to be used
-            Map mMap = mMapFragment.getMap();
-            // ...
-            mMap.setCenter(new GeoCoordinate(51.51, -0.11),
-                    Map.Animation.NONE);
+            mMap = mMapFragment.getMap();
 
-// Get the current center of the Map
-            GeoCoordinate coordinate = mMap.getCenter();
-
-            // Get the maximum,minimum zoom level.
-            double maxZoom = mMap.getMaxZoomLevel();
-            double minZoom = mMap.getMinZoomLevel();
-
-// Set the zoom level to the median (10).
-            mMap.setZoomLevel((maxZoom + minZoom) / 2);
-
-// Get the zoom level back
-            double zoom = mMap.getZoomLevel();
         } else {
             Log.i("Map Initialization", "onEngineInitializationCompleted: " + error);
         }
     }
+
+    // Define positioning listener
+
+    @Override
+    public void onPositionUpdated(PositioningManager.LocationMethod locationMethod, GeoPosition geoPosition, boolean b) {
+//        if (!paused) {
+        Log.i(TAG, "onPositionUpdated: " + geoPosition.getCoordinate());
+        mMap.setCenter(geoPosition.getCoordinate(),
+                Map.Animation.NONE);
+        setCenterAndZoom(geoPosition);
+        mMap.getPositionIndicator().setVisible(true);
+        // Get the current center of the Map
+
+//        }
+    }
+
+    public void onPositionFixChanged(PositioningManager.LocationMethod method,
+                                     PositioningManager.LocationStatus status) {
+    }
+
+    private void setCenterAndZoom(GeoPosition geoPosition) {
+        mMap.setZoomLevel(mMap.getMaxZoomLevel() - 2);
+        Log.i(TAG, "setCenterAndZoom: " + mMap.getMaxZoomLevel());
+//// Get the zoom level back
+//            double zoom = mMap.getZoomLevel();
+    }
+
+    private void getLocation() {
+        posManager.getLocationStatus(PositioningManager.LocationMethod.NETWORK);
+
+        posManager.start(
+                PositioningManager.LocationMethod.NETWORK);
+
+// Register positioning listener
+        posManager.addListener(
+                new WeakReference<PositioningManager.OnPositionChangedListener>(this));
+    }
 }
+
+

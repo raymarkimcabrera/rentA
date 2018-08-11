@@ -42,14 +42,18 @@ public class PermissionRequestActivity extends BaseActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             checkForPermissions(REQUEST_CODE_PERMISSION_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.ACCESS_FINE_LOCATION);
-            checkForPermissions(REQUEST_CODE_PERMISSION_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE);
+
         }
     }
 
     @Override
     protected void permissionGranted(int requestCode) {
-        startActivity(DashboardActivity.newIntent(mContext));
+        if (REQUEST_CODE_PERMISSION_LOCATION == requestCode)
+            checkForPermissions(REQUEST_CODE_PERMISSION_STORAGE,
+                    android.Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (REQUEST_CODE_PERMISSION_STORAGE == requestCode)
+            startActivity(DashboardActivity.newIntent(mContext));
     }
 
     @Override
