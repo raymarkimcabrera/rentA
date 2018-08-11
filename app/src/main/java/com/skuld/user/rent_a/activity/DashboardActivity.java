@@ -135,6 +135,9 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                     case R.id.menuItemHome:
                         break;
 
+                    case R.id.menuMessages:
+                        break;
+
                 }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;

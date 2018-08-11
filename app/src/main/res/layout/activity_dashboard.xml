@@ -9,29 +9,92 @@
     tools:context=".activity.DashboardActivity">
 
     <fragment
-        class="com.here.android.mpa.mapping.MapFragment"
         android:id="@+id/mapfragment"
+        class="com.here.android.mpa.mapping.MapFragment"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"/>
+        android:layout_height="fill_parent" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="10dp"
+        android:paddingBottom="30dp"
         android:paddingEnd="10dp"
-        android:paddingBottom="30dp">
+        android:paddingStart="10dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="7dp"
+            android:layout_marginLeft="7dp"
+            android:orientation="vertical"
+            android:background="@drawable/button_white_rounded_corner"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Pick-up point"
+                    android:layout_weight="1"/>
+
+                <EditText
+                    android:id="@+id/pickUpEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:padding="3dp"
+                    android:layout_weight="2"
+                    android:singleLine="true"/>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@drawable/dashed_corner"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Destination"/>
+
+                <EditText
+                    android:id="@+id/destinationEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:background="@android:color/transparent"
+                    android:padding="3dp"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+        </LinearLayout>
 
         <Button
             android:id="@+id/findVehicleButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:text="Find A Vehicle"
-            android:textColor="@color/white"
             android:layout_alignParentBottom="true"
-            android:padding="5dp"/>
+            android:background="@drawable/button_rounded_corner"
+            android:padding="10dp"
+            android:text="@string/find_a_vehicle"
+            android:textColor="@color/white" />
 
     </RelativeLayout>
 

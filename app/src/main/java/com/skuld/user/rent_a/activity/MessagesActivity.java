@@ -1,5 +1,7 @@
 package com.skuld.user.rent_a.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.LinearLayout;
@@ -17,6 +19,11 @@ public class MessagesActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    public static Intent newIntent(Context context) {
+        Intent intent = new Intent(context, DashboardActivity.class);
+        return intent;
     }
 
     @Override
