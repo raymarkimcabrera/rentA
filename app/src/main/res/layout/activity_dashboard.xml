@@ -46,14 +46,15 @@
                     android:text="Pick-up point"
                     android:layout_weight="1"/>
 
-                <EditText
-                    android:id="@+id/pickUpEditText"
+                <TextView
+                    android:id="@+id/pickUpTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
                     android:padding="3dp"
                     android:layout_weight="2"
-                    android:singleLine="true"/>
+                    android:singleLine="true"
+                    android:ellipsize="end"/>
 
             </LinearLayout>
 
@@ -74,14 +75,15 @@
                     android:layout_weight="1"
                     android:text="Destination"/>
 
-                <EditText
-                    android:id="@+id/destinationEditText"
+                <TextView
+                    android:id="@+id/destinationTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
                     android:background="@android:color/transparent"
                     android:padding="3dp"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:ellipsize="end"/>
 
             </LinearLayout>
         </LinearLayout>

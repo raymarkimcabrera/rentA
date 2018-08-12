@@ -58,7 +58,8 @@
         <activity android:name=".activity.DashboardActivity" />
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.MessagesActivity" />
-        <activity android:name=".activity.PermissionRequestActivity"></activity>
+        <activity android:name=".activity.PermissionRequestActivity" />
+        <activity android:name=".AutoCompleteKeyboardActivity"></activity>
     </application>
 
 </manifest>

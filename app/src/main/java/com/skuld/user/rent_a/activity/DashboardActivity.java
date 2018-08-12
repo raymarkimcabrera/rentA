@@ -1,6 +1,7 @@
 package com.skuld.user.rent_a.activity;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +13,10 @@ import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -21,13 +25,17 @@ import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.skuld.user.rent_a.AutoCompleteKeyboardActivity;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
 
+import org.w3c.dom.Text;
+
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener {
 
@@ -35,6 +43,9 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     public static final int REQUEST_CODE_PERMISSION_STORAGE = 101;
     public static final int REQUEST_CODE_PERMISSION_LOCATION = 102;
+
+
+    private static int REQUEST_CODE_EDIT_TEXTFIELD = 1;
 
     @BindView(R.id.navigationView)
     NavigationView mNavigationView;
@@ -45,6 +56,11 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @BindView(R.id.findVehicleButton)
     Button mFindVehicleButton;
 
+    @BindView(R.id.destinationTextView)
+    TextView mDestinationEditText;
+
+    @BindView(R.id.pickUpTextView)
+    TextView mPickUpeditText;
 
     private Map mMap;
     private boolean paused;
@@ -57,6 +73,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         initialize();
 
         initNavigationMenu();
+
+        initViews();
 
         initializeMaps();
 
@@ -104,6 +122,28 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         }
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE_EDIT_TEXTFIELD) {
+            if (resultCode == Activity.RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                int editTextId = bundle.getInt(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID);
+                String text = bundle.getString(AutoCompleteKeyboardActivity.RESULT_TEXT);
+                boolean removeFocusAfter = bundle.getBoolean(AutoCompleteKeyboardActivity.RESULT_REMOVE_FOCUS_AFTER);
+
+                TextView textView = (TextView) findViewById(editTextId);
+                textView.setText(text);
+
+                if (removeFocusAfter) {
+                    textView.clearFocus();
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+            }
+        }
+    }
+
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
@@ -223,6 +263,24 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 // Register positioning listener
         posManager.addListener(
                 new WeakReference<PositioningManager.OnPositionChangedListener>(this));
+    }
+
+    private void initViews(){
+        registerEditTextToShowAutoComplete(mPickUpeditText, false);
+        registerEditTextToShowAutoComplete(mDestinationEditText, false);
+    }
+    public void registerEditTextToShowAutoComplete(final TextView textView, final boolean removeFocusAfter) {
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openCustomKeyboardActivity(textView, removeFocusAfter);
+            }
+        });
+    }
+
+    private void openCustomKeyboardActivity(TextView textView, final boolean removeFocusAfter) {
+        Intent intent = AutoCompleteKeyboardActivity.newIntent(mContext, textView.getId(), textView.getHint() + "", removeFocusAfter);
+        startActivityForResult(intent, REQUEST_CODE_EDIT_TEXTFIELD);
     }
 }
 
