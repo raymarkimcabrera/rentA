@@ -72,16 +72,6 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
         });
 //
         mEditText.setHint(mEditTextId == R.id.pickUpTextView ? "Set pick-up location" : "Set destination");
-//        mEditText.setInputType(mEditTextInputType);
-//
-//        mCustomKeyboard = new CustomKeyboard(this, R.id.keyboardView) {
-//            @Override
-//            public void onDone() {
-//                backToPreviousActivity();
-//            }
-//        };
-//        mCustomKeyboard.registerEditText(R.id.editText);
-//
     }
 
     @Override
