@@ -50,7 +50,7 @@ public class PermissionRequestActivity extends BaseActivity {
     protected void permissionGranted(int requestCode) {
         if (REQUEST_CODE_PERMISSION_LOCATION == requestCode)
             checkForPermissions(REQUEST_CODE_PERMISSION_STORAGE,
-                    android.Manifest.permission.READ_EXTERNAL_STORAGE);
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (REQUEST_CODE_PERMISSION_STORAGE == requestCode)
             startActivity(DashboardActivity.newIntent(mContext));

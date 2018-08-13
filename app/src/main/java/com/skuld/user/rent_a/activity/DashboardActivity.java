@@ -3,13 +3,16 @@ package com.skuld.user.rent_a.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -95,6 +98,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     protected void onResume() {
         super.onResume();
+        statusCheck();
         paused = false;
         if (posManager != null) {
             getLocation();
@@ -282,6 +286,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         Intent intent = AutoCompleteKeyboardActivity.newIntent(mContext, textView.getId(), textView.getHint() + "", removeFocusAfter);
         startActivityForResult(intent, REQUEST_CODE_EDIT_TEXTFIELD);
     }
+
+
 }
 
 
