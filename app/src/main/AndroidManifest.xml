@@ -31,10 +31,10 @@
             android:value="@string/facebook_app_id" />
         <meta-data
             android:name="com.here.android.maps.appid"
-            android:value="y5fHswCIlivtUId6Ehsr" />
+            android:value="@string/here_app_id" />
         <meta-data
             android:name="com.here.android.maps.apptoken"
-            android:value="USe_2O9CqyXBcEmltKQOtA" />
+            android:value="@string/here_app_token" />
 
         <activity
             android:name="com.facebook.FacebookActivity"
