@@ -238,10 +238,13 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     public void onPositionUpdated(PositioningManager.LocationMethod locationMethod, GeoPosition geoPosition, boolean b) {
 //        if (!paused) {
         Log.i(TAG, "onPositionUpdated: " + geoPosition.getCoordinate());
-        mMap.setCenter(geoPosition.getCoordinate(),
-                Map.Animation.NONE);
-        setCenterAndZoom(geoPosition);
-        mMap.getPositionIndicator().setVisible(true);
+        if (mMap != null) {
+            mMap.setCenter(geoPosition.getCoordinate(),
+                    Map.Animation.NONE);
+            setCenterAndZoom(geoPosition);
+            mMap.getPositionIndicator().setVisible(true);
+        }
+
         // Get the current center of the Map
 
 //        }
@@ -269,10 +272,11 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 new WeakReference<PositioningManager.OnPositionChangedListener>(this));
     }
 
-    private void initViews(){
+    private void initViews() {
         registerEditTextToShowAutoComplete(mPickUpeditText, false);
         registerEditTextToShowAutoComplete(mDestinationEditText, false);
     }
+
     public void registerEditTextToShowAutoComplete(final TextView textView, final boolean removeFocusAfter) {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override

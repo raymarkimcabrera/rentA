@@ -3,14 +3,33 @@ package com.skuld.user.rent_a;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.AppCompatTextView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.skuld.user.rent_a.model.LocationList;
+import com.skuld.user.rent_a.model.SuggestionsItem;
+import com.skuld.user.rent_a.rest.ApiClass;
+import com.skuld.user.rent_a.rest.ApiInterface;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AutoCompleteKeyboardActivity extends AppCompatActivity {
     public static final String TAG = "CustomKeyboardActivity";
@@ -26,7 +45,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
 
     public static Intent newIntent(Context context, int editTextId,
                                    String editTextHint) {
-        return newIntent(context, editTextId,  editTextHint, false);
+        return newIntent(context, editTextId, editTextHint, false);
     }
 
     public static Intent newIntent(Context context, int editTextId,
@@ -46,6 +65,8 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
     private EditText mEditText;
     private ImageView mBackImageView;
 
+    ApiInterface mApiInterface;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +79,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
         mRemoveFocusAfter = bundle.getBoolean(ARGS_REMOVE_FOCUS_AFTER);
 
         initUI();
+//
     }
 
     private void initUI() {
@@ -72,6 +94,24 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
         });
 //
         mEditText.setHint(mEditTextId == R.id.pickUpTextView ? "Set pick-up location" : "Set destination");
+
+        mEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ApiClass apiClass = new ApiClass();
+                apiClass.start(getString(R.string.here_app_id), getString(R.string.here_app_token), s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     @Override
@@ -79,12 +119,18 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
         backToPreviousActivity();
     }
 
+    @Override
+    protected void onStop() {
+//        compositeDisposable.clear();
+        super.onStop();
+    }
+
     private void backToPreviousActivity() {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(RESULT_EDIT_TEXT_ID, mEditTextId);
         returnIntent.putExtra(RESULT_TEXT, mEditText.getText().toString());
         returnIntent.putExtra(RESULT_REMOVE_FOCUS_AFTER, mRemoveFocusAfter);
-        setResult(Activity.RESULT_OK,returnIntent);
+        setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
 

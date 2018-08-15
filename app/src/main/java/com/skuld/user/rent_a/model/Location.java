@@ -1,34 +1,23 @@
 package com.skuld.user.rent_a.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import java.util.List;
 
-import java.io.Serializable;
+public class Location{
+	private List<SuggestionsItem> suggestions;
 
-public class Location implements Serializable {
+	public void setSuggestions(List<SuggestionsItem> suggestions){
+		this.suggestions = suggestions;
+	}
 
-    @SerializedName("label")
-    @Expose
-    public String label;
+	public List<SuggestionsItem> getSuggestions(){
+		return suggestions;
+	}
 
-    @SerializedName("language")
-    @Expose
-    public String language;
-
-    @SerializedName("countryCode")
-    @Expose
-    public String countryCode;
-
-    @SerializedName("locationId")
-    @Expose
-    public String locationId;
-
-    @SerializedName("address")
-    @Expose
-    public String address;
-
-    @SerializedName("label")
-    @Expose
-    public String matchLevel;
-
+	@Override
+ 	public String toString(){
+		return 
+			"Location{" + 
+			"suggestions = '" + suggestions + '\'' + 
+			"}";
+		}
 }
