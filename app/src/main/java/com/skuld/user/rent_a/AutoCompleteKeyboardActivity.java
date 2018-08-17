@@ -17,9 +17,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.skuld.user.rent_a.model.LocationList;
+import com.skuld.user.rent_a.model.SuggestionList;
 import com.skuld.user.rent_a.model.SuggestionsItem;
 import com.skuld.user.rent_a.rest.ApiClass;
 import com.skuld.user.rent_a.rest.ApiInterface;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -31,7 +37,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AutoCompleteKeyboardActivity extends AppCompatActivity {
+public class AutoCompleteKeyboardActivity extends AppCompatActivity implements Callback<SuggestionList>{
     public static final String TAG = "CustomKeyboardActivity";
 
     public static final String RESULT_TEXT = "RESULT_TEXT";
@@ -64,7 +70,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
 
     private EditText mEditText;
     private ImageView mBackImageView;
-
+    private Context mContext;
     ApiInterface mApiInterface;
 
     @Override
@@ -77,6 +83,19 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
         mEditTextId = bundle.getInt(ARGS_EDIT_TEXT_ID);
         mEditTextHint = bundle.getString(ARGS_EDIT_TEXT_HINT);
         mRemoveFocusAfter = bundle.getBoolean(ARGS_REMOVE_FOCUS_AFTER);
+
+        mContext = this;
+
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://autocomplete.geocoder.api.here.com/6.2/")
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+
+        mApiInterface = retrofit.create(ApiInterface.class);
 
         initUI();
 //
@@ -105,6 +124,12 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 ApiClass apiClass = new ApiClass();
                 apiClass.start(getString(R.string.here_app_id), getString(R.string.here_app_token), s.toString());
+
+                Call<SuggestionList> suggestionsItemCall = mApiInterface.getSuggestions(getString(R.string.here_app_id),
+                        getString(R.string.here_app_token),
+                        s.toString());
+
+                suggestionsItemCall.enqueue(AutoCompleteKeyboardActivity.this);
             }
 
             @Override
@@ -135,4 +160,31 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onResponse(Call<SuggestionList> call, Response<SuggestionList> response) {
+        Gson gson = new Gson();
+        if(response.isSuccessful()) {
+            SuggestionList changesList =  (SuggestionList) response.body();
+            System.out.print("onResponse" + gson.toJson(changesList));
+            Log.e("GET", "onSuccess: " + changesList );
+        } else {
+            try {
+                Log.e("ERROR", "onResponse: " + response.errorBody().string() );
+                JSONObject jObjError = new JSONObject(response.errorBody().string());
+
+                Log.e("GET", "onErrorBody: " + jObjError.get("message") );
+                Log.e("GET", "onErrorBody: " + jObjError.get("code") );
+            } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<SuggestionList> call, Throwable t) {
+        t.printStackTrace();
+        Log.e("GET", "onFailure: " + t.getMessage() );
+    }
 }
