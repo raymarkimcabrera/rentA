@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.disposables.CompositeDisposable;
@@ -38,7 +40,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AutoCompleteKeyboardActivity extends AppCompatActivity implements Callback<SuggestionList>{
-    public static final String TAG = "CustomKeyboardActivity";
+    public static final String TAG = "AutoCompleteKeyboardActivity";
 
     public static final String RESULT_TEXT = "RESULT_TEXT";
     public static final String RESULT_EDIT_TEXT_ID = "RESULT_EDIT_TEXT_ID";
@@ -69,6 +71,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
     private boolean mRemoveFocusAfter;
 
     private EditText mEditText;
+    private LinearLayout mLocationFromMapLinearLayout;
     private ImageView mBackImageView;
     private Context mContext;
     ApiInterface mApiInterface;
@@ -104,6 +107,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
     private void initUI() {
         mEditText = (EditText) findViewById(R.id.editText);
         mBackImageView = (ImageView) findViewById(R.id.backImageView);
+        mLocationFromMapLinearLayout = (LinearLayout) findViewById(R.id.locationFromMapLinearLayout);
 
         mBackImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +115,14 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
                 backToPreviousActivity();
             }
         });
-//
+
+        mLocationFromMapLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
         mEditText.setHint(mEditTextId == R.id.pickUpTextView ? "Set pick-up location" : "Set destination");
 
         mEditText.addTextChangedListener(new TextWatcher() {
