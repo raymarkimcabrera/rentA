@@ -24,6 +24,7 @@ android {
             resValue "string", "fb_login_protocol_scheme", "fb237773163519396"
             resValue "string", "here_app_id", "y5fHswCIlivtUId6Ehsr"
             resValue "string", "here_app_token", "USe_2O9CqyXBcEmltKQOtA"
+            resValue "string", "here_api_version", "6.2"
         }
     }
 

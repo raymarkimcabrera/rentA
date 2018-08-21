@@ -2,28 +2,25 @@ package com.skuld.user.rent_a.rest;
 
 
 
-import com.google.gson.JsonObject;
-import com.skuld.user.rent_a.model.LocationList;
-import com.skuld.user.rent_a.model.LocationList;
-import com.skuld.user.rent_a.model.SuggestionList;
-import com.skuld.user.rent_a.model.SuggestionsItem;
+import com.skuld.user.rent_a.model.autocomplete.SuggestionList;
+import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoder;
+import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
 
-import java.util.List;
-
-import io.reactivex.Observable;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
+    String appID = "y5fHswCIlivtUId6Ehsr";
+    String appToken = "USe_2O9CqyXBcEmltKQOtA";
+    String credentials = "?app_id="+ appID+"&app_code=" + appToken;
 
-    @GET("suggest.json")
-    Call<SuggestionList> getSuggestions(@Query("app_id") String appID,
-                                        @Query("app_code") String appToken,
-                                        @Query("query") String query);
+    @GET("suggest.json" + credentials)
+    Call<SuggestionList> getSuggestions(@Query("query") String query);
 
+    @GET("reversegeocode.json" + credentials)
+    Call<ReverseGeocoderResponse> getLocationDetails(@Query("prox") String query,
+                                                     @Query("mode") String mode,
+                                                     @Query("maxresults") int maxResults);
 
 }

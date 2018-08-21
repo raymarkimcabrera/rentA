@@ -1,4 +1,4 @@
-package com.skuld.user.rent_a.model;
+package com.skuld.user.rent_a.model.autocomplete;
 
 import android.support.annotation.Keep;
 

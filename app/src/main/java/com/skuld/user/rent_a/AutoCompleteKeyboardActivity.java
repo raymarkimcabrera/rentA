@@ -3,43 +3,30 @@ package com.skuld.user.rent_a;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import com.skuld.user.rent_a.model.LocationList;
-import com.skuld.user.rent_a.model.SuggestionList;
-import com.skuld.user.rent_a.model.SuggestionsItem;
-import com.skuld.user.rent_a.rest.ApiClass;
-import com.skuld.user.rent_a.rest.ApiInterface;
+import com.skuld.user.rent_a.activity.DashboardActivity;
+import com.skuld.user.rent_a.activity.LocationSelectorMapActivity;
+import com.skuld.user.rent_a.model.autocomplete.SuggestionList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 
-import butterknife.BindView;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-public class AutoCompleteKeyboardActivity extends AppCompatActivity implements Callback<SuggestionList>{
+public class AutoCompleteKeyboardActivity extends BaseActivity implements Callback<SuggestionList>{
     public static final String TAG = "AutoCompleteKeyboardActivity";
 
     public static final String RESULT_TEXT = "RESULT_TEXT";
@@ -74,13 +61,10 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
     private LinearLayout mLocationFromMapLinearLayout;
     private ImageView mBackImageView;
     private Context mContext;
-    ApiInterface mApiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_auto_complete_keyboard);
 
         Bundle bundle = getIntent().getExtras();
         mEditTextId = bundle.getInt(ARGS_EDIT_TEXT_ID);
@@ -89,19 +73,19 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
 
         mContext = this;
 
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://autocomplete.geocoder.api.here.com/6.2/")
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-        mApiInterface = retrofit.create(ApiInterface.class);
-
+        initializeAPI();
         initUI();
 //
+    }
+
+    private void initializeAPI() {
+
+        mApiInterface = autoCompleteAPI();
+    }
+
+    @Override
+    protected int setLayoutResourceID() {
+        return R.layout.activity_auto_complete_keyboard;
     }
 
     private void initUI() {
@@ -119,7 +103,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
         mLocationFromMapLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                    startActivityForResult(LocationSelectorMapActivity.newIntent(mContext), DashboardActivity.REQUEST_CODE_MAP_LOCATION_SELECT);
             }
         });
 
@@ -133,12 +117,7 @@ public class AutoCompleteKeyboardActivity extends AppCompatActivity implements C
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                ApiClass apiClass = new ApiClass();
-                apiClass.start(getString(R.string.here_app_id), getString(R.string.here_app_token), s.toString());
-
-                Call<SuggestionList> suggestionsItemCall = mApiInterface.getSuggestions(getString(R.string.here_app_id),
-                        getString(R.string.here_app_token),
-                        s.toString());
+                Call<SuggestionList> suggestionsItemCall = mApiInterface.getSuggestions(s.toString());
 
                 suggestionsItemCall.enqueue(AutoCompleteKeyboardActivity.this);
             }

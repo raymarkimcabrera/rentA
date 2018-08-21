@@ -49,6 +49,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
 
     private static int REQUEST_CODE_EDIT_TEXTFIELD = 1;
+    public static int REQUEST_CODE_MAP_LOCATION_SELECT = 2;
 
     @BindView(R.id.navigationView)
     NavigationView mNavigationView;
@@ -144,6 +145,14 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
+            }
+        } else if (requestCode == REQUEST_CODE_MAP_LOCATION_SELECT){
+            if (resultCode == Activity.RESULT_OK){
+
+            }
+
+            if (resultCode == Activity.RESULT_CANCELED){
+
             }
         }
     }

@@ -14,13 +14,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.skuld.user.rent_a.activity.DashboardActivity;
-import com.skuld.user.rent_a.views.MapsView;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.skuld.user.rent_a.rest.ApiInterface;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public abstract class BaseActivity extends AppCompatActivity{
@@ -28,6 +31,8 @@ public abstract class BaseActivity extends AppCompatActivity{
     protected Context mContext;
 
     protected Toolbar mToolbar;
+
+    protected ApiInterface mApiInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,36 @@ public abstract class BaseActivity extends AppCompatActivity{
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
         }
+
     }
+
+    private Gson getGson() {
+        return new GsonBuilder()
+                .setLenient()
+                .create();
+
+    }
+//    API Functions
+
+
+    public ApiInterface autoCompleteAPI(){
+         Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://autocomplete.geocoder.api.here.com/" + getString(R.string.here_api_version) + "/")
+                .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .build();
+        return retrofit.create(ApiInterface.class);
+    }
+
+    public ApiInterface getLocationDetailsAPI(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://reverse.geocoder.api.here.com/" + getString(R.string.here_api_version) + "/")
+                .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .build();
+
+        return retrofit.create(ApiInterface.class);
+    }
+
+//    END API Functions
 
     protected abstract int setLayoutResourceID();
 
