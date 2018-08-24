@@ -2,7 +2,9 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
-public class MetaInfo{
+import java.io.Serializable;
+
+public class MetaInfo implements Serializable {
 
 	@SerializedName("NextPageInformation")
 	private String nextPageInformation;

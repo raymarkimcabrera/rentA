@@ -1,9 +1,10 @@
 package com.skuld.user.rent_a.model.reverse_geocoder;
 
+import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
-public class Address{
+public class Address implements Serializable{
 
 	@SerializedName("AdditionalData")
 	private List<AdditionalDataItem> additionalData;
@@ -113,6 +114,10 @@ public class Address{
 
 	public String getDistrict(){
 		return district;
+	}
+
+	public String getAddress(){
+		return houseNumber + street + city + district;
 	}
 
 	@Override

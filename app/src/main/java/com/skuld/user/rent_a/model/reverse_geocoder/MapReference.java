@@ -2,7 +2,9 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
-public class MapReference{
+import java.io.Serializable;
+
+public class MapReference implements Serializable {
 
 	@SerializedName("CountryId")
 	private String countryId;

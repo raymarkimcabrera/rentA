@@ -2,9 +2,10 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class ReverseGeocoderResponse {
+public class ReverseGeocoderResponse implements Serializable {
 
     @SerializedName("Response")
     private ReverseGeocoder reverseGeocoder;

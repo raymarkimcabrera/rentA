@@ -2,7 +2,9 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Location{
+import java.io.Serializable;
+
+public class Location implements Serializable {
 
 	@SerializedName("DisplayPosition")
 	private DisplayPosition displayPosition;

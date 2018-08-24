@@ -2,8 +2,10 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 
-public class BottomRight{
+
+public class BottomRight implements Serializable {
 
 	@SerializedName("Latitude")
 	private double latitude;

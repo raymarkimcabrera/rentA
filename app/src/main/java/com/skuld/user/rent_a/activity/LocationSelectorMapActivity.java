@@ -106,7 +106,7 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
             Log.e("GET", "onSuccess: " + changesList.getReverseGeocoder().toString() );
         } else {
             try {
-                Log.e("ERROR", "onResponse: " + response.errorBody().string() );
+                Log.e("ERROR", "onErrorBody: " + response.errorBody().string() );
                 JSONObject jObjError = new JSONObject(response.errorBody().string());
 
                 Log.e("GET", "onErrorBody: " + jObjError.get("message") );

@@ -2,7 +2,9 @@ package com.skuld.user.rent_a.model.autocomplete;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Address{
+import java.io.Serializable;
+
+public class Address implements Serializable {
 	@SerializedName("country")
 	private String country;
 

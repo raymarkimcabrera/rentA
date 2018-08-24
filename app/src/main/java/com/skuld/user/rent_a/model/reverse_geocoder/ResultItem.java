@@ -2,7 +2,9 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
-public class ResultItem{
+import java.io.Serializable;
+
+public class ResultItem implements Serializable {
 
 	@SerializedName("Relevance")
 	private double relevance;

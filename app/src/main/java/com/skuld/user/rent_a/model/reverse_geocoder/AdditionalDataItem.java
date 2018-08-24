@@ -2,7 +2,9 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AdditionalDataItem{
+import java.io.Serializable;
+
+public class AdditionalDataItem implements Serializable {
 
 	@SerializedName("value")
 	private String value;

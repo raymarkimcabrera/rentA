@@ -1,9 +1,10 @@
 package com.skuld.user.rent_a.model.reverse_geocoder;
 
+import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.SerializedName;
 
-public class MatchQuality{
+public class MatchQuality implements Serializable {
 
 	@SerializedName("HouseNumber")
 	private double houseNumber;

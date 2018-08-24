@@ -22,5 +22,7 @@ public interface ApiInterface {
     Call<ReverseGeocoderResponse> getLocationDetails(@Query("prox") String query,
                                                      @Query("mode") String mode,
                                                      @Query("maxresults") int maxResults);
+    @GET("geocode.json" + credentials)
+    Call<ReverseGeocoderResponse>getLocationDetailsByID(@Query("locationID") String locationID);
 
 }

@@ -32,9 +32,12 @@ import com.skuld.user.rent_a.AutoCompleteKeyboardActivity;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.model.reverse_geocoder.Address;
+import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
@@ -160,6 +163,12 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
+        return intent;
+    }
+
+    public static Intent newIntent(Context context, Address address, DisplayPosition displayPosition) {
+        Intent intent = new Intent(context, DashboardActivity.class);
+        intent.putExtra("addresss",  address);
         return intent;
     }
 
