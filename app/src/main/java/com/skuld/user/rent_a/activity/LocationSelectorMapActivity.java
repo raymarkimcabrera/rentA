@@ -12,8 +12,12 @@ import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.model.reverse_geocoder.Location;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoder;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
+import com.skuld.user.rent_a.presenter.LocationSelectorMapPresenter;
+import com.skuld.user.rent_a.views.LocationDetailsView;
+import com.skuld.user.rent_a.views.ReverseGeoCoderView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,8 +29,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LocationSelectorMapActivity extends BaseActivity implements OnEngineInitListener, Callback<ReverseGeocoderResponse>{
-
+public class LocationSelectorMapActivity extends BaseActivity implements OnEngineInitListener, ReverseGeoCoderView, LocationDetailsView {
+    private static final String TAG = LocationSelectorMapActivity.class.getSimpleName();
     private static final int COVERAGE_RADIUS = 100;
     private static final int MAX_RESULTS = 1;
     private static final String MODE = "retrieveAddresses";
@@ -35,6 +39,8 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
     private Map mMap;
     private MapMarker mMapMarker;
     private Context mContext;
+
+    private LocationSelectorMapPresenter mLocationSelecctorMapPresenter;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, LocationSelectorMapActivity.class);
@@ -50,10 +56,15 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
         initializeMaps();
 
         initializeAPI();
+
+        initializePresenter();
+    }
+
+    private void initializePresenter() {
+        mLocationSelecctorMapPresenter = new LocationSelectorMapPresenter(mContext, mApiInterface, (ReverseGeoCoderView) this);
     }
 
     private void initializeAPI() {
-
         mApiInterface = getLocationDetailsAPI();
     }
 
@@ -77,50 +88,36 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
 
     private void initializeMaps() {
         mMapFragment = (MapFragment)
-                    getFragmentManager().findFragmentById(R.id.mapfragment);
+                getFragmentManager().findFragmentById(R.id.mapfragment);
 
         mMapFragment.init(this);
 
     }
 
     @OnClick(R.id.selectLocationButton)
-    void OnClick(){
+    void OnClick() {
         Log.e("LATLANG", "OnClick: " + mMap.getCenter().getLatitude() +
                 "," + mMap.getCenter().getLongitude() +
-                "," + COVERAGE_RADIUS );
-        Call<ReverseGeocoderResponse> reverseGeocoderCall = mApiInterface.getLocationDetails(mMap.getCenter().getLatitude() +
-                "," + mMap.getCenter().getLongitude() +
-                "," + COVERAGE_RADIUS,
+                "," + COVERAGE_RADIUS);
+
+        mLocationSelecctorMapPresenter.reverseGeocoderCall(mMap.getCenter().getLatitude() +
+                        "," + mMap.getCenter().getLongitude() +
+                        "," + COVERAGE_RADIUS,
                 MODE,
                 MAX_RESULTS);
-
-        reverseGeocoderCall.enqueue(LocationSelectorMapActivity.this);
     }
 
     @Override
-    public void onResponse(Call<ReverseGeocoderResponse> call, Response<ReverseGeocoderResponse> response) {
-        Gson gson = new Gson();
-        if(response.isSuccessful()) {
-            ReverseGeocoderResponse changesList =  response.body();
-            System.out.print("onResponse" + gson.toJson(changesList));
-            Log.e("GET", "onSuccess: " + changesList.getReverseGeocoder().toString() );
-        } else {
-            try {
-                Log.e("ERROR", "onErrorBody: " + response.errorBody().string() );
-                JSONObject jObjError = new JSONObject(response.errorBody().string());
+    public void onReverseGeoCoderCallSuccess(ReverseGeocoderResponse response) {
+        Location location = response.getLocationDetails();
 
-                Log.e("GET", "onErrorBody: " + jObjError.get("message") );
-                Log.e("GET", "onErrorBody: " + jObjError.get("code") );
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        mApiInterface = getLocationDetailsByID();
+        mLocationSelecctorMapPresenter = new LocationSelectorMapPresenter(mContext, mApiInterface, (LocationDetailsView) this);
+        mLocationSelecctorMapPresenter.getLocationID(location.getLocationId());
     }
 
     @Override
-    public void onFailure(Call<ReverseGeocoderResponse> call, Throwable t) {
-
+    public void onLocationDetailsSuccess(ReverseGeocoderResponse response) {
+        Log.i(TAG, "onLocationDetailsSuccess: " + response.getLocationDetails());
     }
 }

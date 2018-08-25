@@ -3,7 +3,6 @@ package com.skuld.user.rent_a.model.reverse_geocoder;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.List;
 
 public class ReverseGeocoderResponse implements Serializable {
 
@@ -17,5 +16,9 @@ public class ReverseGeocoderResponse implements Serializable {
 
     public void setReverseGeocoder(ReverseGeocoder reverseGeocoder) {
         this.reverseGeocoder = reverseGeocoder;
+    }
+
+    public Location getLocationDetails(){
+        return reverseGeocoder.getView().get(0).getResult().get(0).getLocation();
     }
 }
