@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -16,20 +17,29 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.adapter.AutoCompleteRecyclerViewAdapter;
 import com.skuld.user.rent_a.model.autocomplete.SuggestionList;
+import com.skuld.user.rent_a.model.autocomplete.SuggestionsItem;
 import com.skuld.user.rent_a.model.reverse_geocoder.Location;
+import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
+import com.skuld.user.rent_a.presenter.AutoCompletePresenter;
+import com.skuld.user.rent_a.utils.GeneralUtils;
+import com.skuld.user.rent_a.views.LocationDetailsView;
+import com.skuld.user.rent_a.views.SuggestionsView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.List;
 
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AutoCompleteKeyboardActivity extends BaseActivity implements Callback<SuggestionList> {
-    public static final String TAG = "AutoCompleteKeyboardActivity";
+public class AutoCompleteKeyboardActivity extends BaseActivity implements LocationDetailsView, SuggestionsView, AutoCompleteRecyclerViewAdapter.OnItemClickLister {
+    public static final String TAG = AutoCompleteKeyboardActivity.class.getSimpleName();
 
     public static final String RESULT_TEXT = "RESULT_TEXT";
     public static final String RESULT_EDIT_TEXT_ID = "RESULT_EDIT_TEXT_ID";
@@ -40,29 +50,37 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
 
     private static final String ARGS_REMOVE_FOCUS_AFTER = "ARGS_REMOVE_FOCUS_AFTER";
 
-    public static Intent newIntent(Context context, int editTextId,
-                                   String editTextHint) {
-        return newIntent(context, editTextId, editTextHint, false);
+
+    @BindView(R.id.suggestionsRecyclerView)
+    RecyclerView mSuggestionRecyclerView;
+
+    @BindView(R.id.editText)
+    EditText mEditText;
+
+    @BindView(R.id.locationFromMapLinearLayout)
+    LinearLayout mLocationFromMapLinearLayout;
+
+    @BindView(R.id.backImageView)
+    ImageView mBackImageView;
+
+    public static Intent newIntent(Context context, int editTextId) {
+        return newIntent(context, editTextId, false);
     }
 
-    public static Intent newIntent(Context context, int editTextId,
-                                   String editTextHint, boolean removeFocusAfter) {
+    public static Intent newIntent(Context context, int editTextId, boolean removeFocusAfter) {
         Intent intent = new Intent(context, AutoCompleteKeyboardActivity.class);
         intent.putExtra(ARGS_EDIT_TEXT_ID, editTextId);
-        intent.putExtra(ARGS_EDIT_TEXT_HINT, editTextHint);
         intent.putExtra(ARGS_REMOVE_FOCUS_AFTER, removeFocusAfter);
         return intent;
     }
 
     private int mEditTextId;
-    private String mEditTextText;
-    private String mEditTextHint;
     private boolean mRemoveFocusAfter;
 
-    private EditText mEditText;
-    private LinearLayout mLocationFromMapLinearLayout;
-    private ImageView mBackImageView;
     private Context mContext;
+    private AutoCompletePresenter mAutoCompletePresenter;
+    private AutoCompleteRecyclerViewAdapter mAutoCompleteRecyclerViewAdapter;
+    private List<SuggestionsItem> mSuggestionsItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +88,6 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
 
         Bundle bundle = getIntent().getExtras();
         mEditTextId = bundle.getInt(ARGS_EDIT_TEXT_ID);
-        mEditTextHint = bundle.getString(ARGS_EDIT_TEXT_HINT);
         mRemoveFocusAfter = bundle.getBoolean(ARGS_REMOVE_FOCUS_AFTER);
 
         mContext = this;
@@ -90,10 +107,6 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
     }
 
     private void initUI() {
-        mEditText = (EditText) findViewById(R.id.editText);
-        mBackImageView = (ImageView) findViewById(R.id.backImageView);
-        mLocationFromMapLinearLayout = (LinearLayout) findViewById(R.id.locationFromMapLinearLayout);
-
         mBackImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,9 +131,8 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Call<SuggestionList> suggestionsItemCall = mApiInterface.getSuggestions(s.toString());
-
-                suggestionsItemCall.enqueue(AutoCompleteKeyboardActivity.this);
+                mAutoCompletePresenter = new AutoCompletePresenter(mContext, mApiInterface, (SuggestionsView) AutoCompleteKeyboardActivity.this);
+                mAutoCompletePresenter.getSuggestions(s.toString());
             }
 
             @Override
@@ -168,32 +180,25 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
         finish();
     }
 
-
     @Override
-    public void onResponse(Call<SuggestionList> call, Response<SuggestionList> response) {
-        Gson gson = new Gson();
-        if (response.isSuccessful()) {
-            SuggestionList changesList = (SuggestionList) response.body();
-            System.out.print("onResponse" + gson.toJson(changesList));
-            Log.e("GET", "onSuccess: " + changesList);
-        } else {
-            try {
-                Log.e("ERROR", "onResponse: " + response.errorBody().string());
-                JSONObject jObjError = new JSONObject(response.errorBody().string());
+    public void onSuggestionSuccess(List<SuggestionsItem> suggestionsItems) {
+        mSuggestionsItems = suggestionsItems;
 
-                Log.e("GET", "onErrorBody: " + jObjError.get("message"));
-                Log.e("GET", "onErrorBody: " + jObjError.get("code"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        mAutoCompleteRecyclerViewAdapter = new AutoCompleteRecyclerViewAdapter(mContext, mSuggestionsItems, this);
+        GeneralUtils.setDefaultRecyclerView(mContext,mSuggestionRecyclerView, mAutoCompleteRecyclerViewAdapter);
     }
 
     @Override
-    public void onFailure(Call<SuggestionList> call, Throwable t) {
-        t.printStackTrace();
-        Log.e("GET", "onFailure: " + t.getMessage());
+    public void onItemClick(String query) {
+        mApiInterface = getLocationDetailsByIDAPI();
+
+        mAutoCompletePresenter = new AutoCompletePresenter(mContext, mApiInterface, (LocationDetailsView) this);
+
+        mAutoCompletePresenter.getLocationDetailsByID(query);
+    }
+
+    @Override
+    public void onLocationDetailsSuccess(ReverseGeocoderResponse reverseGeocoderResponse) {
+        Log.e(TAG, "onLocationDetailsSuccess: " + reverseGeocoderResponse );
     }
 }

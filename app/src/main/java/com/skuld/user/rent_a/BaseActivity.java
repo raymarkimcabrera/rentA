@@ -76,7 +76,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         return retrofit.create(ApiInterface.class);
     }
 
-    public ApiInterface getLocationDetailsByID(){
+    public ApiInterface getLocationDetailsByIDAPI(){
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://geocoder.api.here.com/" + getString(R.string.here_api_version) + "/")
                 .addConverterFactory(GsonConverterFactory.create(getGson()))

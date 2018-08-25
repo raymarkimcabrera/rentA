@@ -290,7 +290,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     }
 
     private void openCustomKeyboardActivity(TextView textView, final boolean removeFocusAfter) {
-        Intent intent = AutoCompleteKeyboardActivity.newIntent(mContext, textView.getId(), textView.getHint() + "", removeFocusAfter);
+        Intent intent = AutoCompleteKeyboardActivity.newIntent(mContext, textView.getId(), removeFocusAfter);
         startActivityForResult(intent, REQUEST_CODE_EDIT_TEXTFIELD);
     }
 

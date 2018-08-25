@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.gson.Gson;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
@@ -14,21 +13,12 @@ import com.here.android.mpa.mapping.MapMarker;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.reverse_geocoder.Location;
-import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoder;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
 import com.skuld.user.rent_a.presenter.LocationSelectorMapPresenter;
 import com.skuld.user.rent_a.views.LocationDetailsView;
 import com.skuld.user.rent_a.views.ReverseGeoCoderView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class LocationSelectorMapActivity extends BaseActivity implements OnEngineInitListener, ReverseGeoCoderView, LocationDetailsView {
     private static final String TAG = LocationSelectorMapActivity.class.getSimpleName();
@@ -112,9 +102,9 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
     @Override
     public void onReverseGeoCoderCallSuccess(ReverseGeocoderResponse response) {
         Location location = response.getLocationDetails();
-        mApiInterface = getLocationDetailsByID();
+        mApiInterface = getLocationDetailsByIDAPI();
         mLocationSelecctorMapPresenter = new LocationSelectorMapPresenter(mContext, mApiInterface, (LocationDetailsView) this);
-        mLocationSelecctorMapPresenter.getLocationID(location.getLocationId());
+        mLocationSelecctorMapPresenter.getLocationDetailsByID(location.getLocationId());
     }
 
     @Override

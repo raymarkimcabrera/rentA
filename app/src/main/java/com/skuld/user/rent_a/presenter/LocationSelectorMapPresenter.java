@@ -11,11 +11,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class LocationSelectorMapPresenter extends BasePresenter implements Callback<ReverseGeocoderResponse> {
+public class LocationSelectorMapPresenter extends BasePresenter{
     private static final String REVERSE_GEOCODER_CALL_FLAG = "REVERSE_GEOCODER_CALL_FLAG";
     private static final String GET_LOCATION_FLAG = "GET_LOCATION_FLAG";
 
-    private String mFlag;
     private ApiInterface mApiInterface;
     private ReverseGeoCoderView mReverseGeoCoderView;
     private LocationDetailsView mLocationDetailsView;
@@ -34,37 +33,40 @@ public class LocationSelectorMapPresenter extends BasePresenter implements Callb
     }
 
     public void reverseGeocoderCall(String query, String mode, int maxResults) {
-        mFlag = REVERSE_GEOCODER_CALL_FLAG;
         showProgressDialog(mContext);
         Call<ReverseGeocoderResponse> reverseGeocoderCall = mApiInterface.getLocationDetails(query,
                 mode,
                 maxResults);
 
-        reverseGeocoderCall.enqueue(this);
+        reverseGeocoderCall.enqueue(new Callback<ReverseGeocoderResponse>() {
+            @Override
+            public void onResponse(Call<ReverseGeocoderResponse> call, Response<ReverseGeocoderResponse> response) {
+                mReverseGeoCoderView.onReverseGeoCoderCallSuccess(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<ReverseGeocoderResponse> call, Throwable t) {
+
+            }
+        });
 
     }
 
-    public void getLocationID(String locationID){
-        mFlag = GET_LOCATION_FLAG;
+    public void getLocationDetailsByID(String locationID){
         showProgressDialog(mContext);
         Call<ReverseGeocoderResponse> locationDetails = mApiInterface.getLocationDetailsByID(locationID);
 
-        locationDetails.enqueue(this);
-    }
+        locationDetails.enqueue(new Callback<ReverseGeocoderResponse>() {
+            @Override
+            public void onResponse(Call<ReverseGeocoderResponse> call, Response<ReverseGeocoderResponse> response) {
+                mLocationDetailsView.onLocationDetailsSuccess(response.body());
+            }
 
-    @Override
-    public void onResponse(Call<ReverseGeocoderResponse> call, Response<ReverseGeocoderResponse> response) {
-        hideProgressDialog();
-        if (mFlag.equals(REVERSE_GEOCODER_CALL_FLAG)) {
-            mReverseGeoCoderView.onReverseGeoCoderCallSuccess(response.body());
-        } else if (mFlag.equals(GET_LOCATION_FLAG)){
-            mLocationDetailsView.onLocationDetailsSuccess(response.body());
-        }
-    }
+            @Override
+            public void onFailure(Call<ReverseGeocoderResponse> call, Throwable t) {
 
-    @Override
-    public void onFailure(Call<ReverseGeocoderResponse> call, Throwable t) {
-
+            }
+        });
     }
 
 }

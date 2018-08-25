@@ -23,10 +23,15 @@ public class AutoCompleteRecyclerViewAdapter extends  RecyclerView.Adapter<AutoC
     public static final String PHL_COUNTRY_CODE = "PHL";
     private Context mContext;
     private List<SuggestionsItem> mSuggestionsItemList;
+    private OnItemClickLister mOnItemClickLister;
 
-    public AutoCompleteRecyclerViewAdapter(Context mContext, List<SuggestionsItem> mSuggestionsItemList) {
+    public interface OnItemClickLister{
+        void onItemClick(String query);
+    }
+    public AutoCompleteRecyclerViewAdapter(Context mContext, List<SuggestionsItem> mSuggestionsItemList, OnItemClickLister onItemClickLister) {
         this.mContext = mContext;
         this.mSuggestionsItemList = mSuggestionsItemList;
+        this.mOnItemClickLister = onItemClickLister;
     }
 
     @NonNull
@@ -40,17 +45,25 @@ public class AutoCompleteRecyclerViewAdapter extends  RecyclerView.Adapter<AutoC
 
     @Override
     public void onBindViewHolder(@NonNull AutoCompleteViewHolder holder, int position) {
-        SuggestionsItem suggestionsItem = mSuggestionsItemList.get(position);
-
+        final SuggestionsItem suggestionsItem = mSuggestionsItemList.get(position);
+        holder.setIsRecyclable(true);
         if (suggestionsItem.getCountryCode().equals(PHL_COUNTRY_CODE)){
             holder.mCompleteAddressTextView.setText(suggestionsItem.getAddress().getFullAddress());
-            holder.mDisplayNameTextView.setText(suggestionsItem.getAddress().getFullAddress());
+            holder.mDisplayNameTextView.setText(suggestionsItem.getLabel());
+            holder.margin.setVisibility(View.VISIBLE);
+            holder.mSuggestionLinearLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mOnItemClickLister.onItemClick(suggestionsItem.getLocationId());
+                }
+            });
+
         }
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return mSuggestionsItemList != null ? mSuggestionsItemList.size() : 0;
     }
 
     public class AutoCompleteViewHolder extends RecyclerView.ViewHolder{
@@ -63,6 +76,9 @@ public class AutoCompleteRecyclerViewAdapter extends  RecyclerView.Adapter<AutoC
 
         @BindView(R.id.suggestionLinearLayout)
         LinearLayout mSuggestionLinearLayout;
+
+        @BindView(R.id.margin)
+        View margin;
 
         public AutoCompleteViewHolder(View itemView) {
             super(itemView);
