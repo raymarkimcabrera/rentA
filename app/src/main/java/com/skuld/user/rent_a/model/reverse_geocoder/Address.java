@@ -49,7 +49,10 @@ public class Address implements Serializable{
 	}
 
 	public String getHouseNumber(){
-		return houseNumber;
+		if (houseNumber != null){
+			return houseNumber;
+		}
+		return "";
 	}
 
 	public void setState(String state){
@@ -81,7 +84,10 @@ public class Address implements Serializable{
 	}
 
 	public String getStreet(){
-		return street;
+		if (street != null){
+			return street;
+		}
+		return "";
 	}
 
 	public void setPostalCode(String postalCode){
@@ -97,7 +103,10 @@ public class Address implements Serializable{
 	}
 
 	public String getCity(){
-		return city;
+		if (city != null){
+			return city;
+		}
+		return "";
 	}
 
 	public void setCounty(String county){
@@ -113,11 +122,14 @@ public class Address implements Serializable{
 	}
 
 	public String getDistrict(){
-		return district;
+		if (district != null){
+			return district;
+		}
+		return "";
 	}
 
-	public String getAddress(){
-		return houseNumber + street + city + district;
+	public String getFullAddress(){
+		return getHouseNumber() + " " + getStreet() + " " + getDistrict() + " "+ getCity();
 	}
 
 	@Override

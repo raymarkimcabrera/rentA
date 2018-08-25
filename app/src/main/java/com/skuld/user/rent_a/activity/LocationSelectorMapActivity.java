@@ -1,5 +1,6 @@
 package com.skuld.user.rent_a.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
     private static final int MAX_RESULTS = 1;
     private static final String MODE = "retrieveAddresses";
 
+    private int mEditTextID;
     private MapFragment mMapFragment;
     private Map mMap;
     private MapMarker mMapMarker;
@@ -42,8 +44,9 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
 
     private LocationSelectorMapPresenter mLocationSelecctorMapPresenter;
 
-    public static Intent newIntent(Context context) {
+    public static Intent newIntent(Context context, int editTextID) {
         Intent intent = new Intent(context, LocationSelectorMapActivity.class);
+        intent.putExtra(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID, editTextID);
         return intent;
     }
 
@@ -51,6 +54,8 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle bundle = getIntent().getExtras();
+        mEditTextID = bundle.getInt(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID);
         mContext = this;
 
         initializeMaps();
@@ -96,9 +101,6 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
 
     @OnClick(R.id.selectLocationButton)
     void OnClick() {
-        Log.e("LATLANG", "OnClick: " + mMap.getCenter().getLatitude() +
-                "," + mMap.getCenter().getLongitude() +
-                "," + COVERAGE_RADIUS);
 
         mLocationSelecctorMapPresenter.reverseGeocoderCall(mMap.getCenter().getLatitude() +
                         "," + mMap.getCenter().getLongitude() +
@@ -110,7 +112,6 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
     @Override
     public void onReverseGeoCoderCallSuccess(ReverseGeocoderResponse response) {
         Location location = response.getLocationDetails();
-
         mApiInterface = getLocationDetailsByID();
         mLocationSelecctorMapPresenter = new LocationSelectorMapPresenter(mContext, mApiInterface, (LocationDetailsView) this);
         mLocationSelecctorMapPresenter.getLocationID(location.getLocationId());
@@ -118,6 +119,10 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
 
     @Override
     public void onLocationDetailsSuccess(ReverseGeocoderResponse response) {
-        Log.i(TAG, "onLocationDetailsSuccess: " + response.getLocationDetails());
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID, mEditTextID);
+        returnIntent.putExtra("location", response.getLocationDetails());
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 }

@@ -1,4 +1,4 @@
-package com.skuld.user.rent_a;
+package com.skuld.user.rent_a.activity;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,11 +11,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.skuld.user.rent_a.activity.DashboardActivity;
-import com.skuld.user.rent_a.activity.LocationSelectorMapActivity;
+import com.skuld.user.rent_a.BaseActivity;
+import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.autocomplete.SuggestionList;
+import com.skuld.user.rent_a.model.reverse_geocoder.Location;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +28,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AutoCompleteKeyboardActivity extends BaseActivity implements Callback<SuggestionList>{
+public class AutoCompleteKeyboardActivity extends BaseActivity implements Callback<SuggestionList> {
     public static final String TAG = "AutoCompleteKeyboardActivity";
 
     public static final String RESULT_TEXT = "RESULT_TEXT";
@@ -74,12 +76,11 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
         mContext = this;
 
         initializeAPI();
+
         initUI();
-//
     }
 
     private void initializeAPI() {
-
         mApiInterface = autoCompleteAPI();
     }
 
@@ -103,7 +104,7 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
         mLocationFromMapLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                    startActivityForResult(LocationSelectorMapActivity.newIntent(mContext), DashboardActivity.REQUEST_CODE_MAP_LOCATION_SELECT);
+                startActivityForResult(LocationSelectorMapActivity.newIntent(mContext, mEditTextId), DashboardActivity.REQUEST_CODE_EDIT_TEXTFIELD);
             }
         });
 
@@ -136,8 +137,26 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
 
     @Override
     protected void onStop() {
-//        compositeDisposable.clear();
         super.onStop();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DashboardActivity.REQUEST_CODE_EDIT_TEXTFIELD) {
+            if (resultCode == Activity.RESULT_OK) {
+                Bundle bundle = data.getExtras();
+                int editTextId = bundle.getInt(RESULT_EDIT_TEXT_ID);
+                Location location = (Location) bundle.getSerializable("location");
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra(RESULT_EDIT_TEXT_ID, editTextId);
+                returnIntent.putExtra("location", location);
+                setResult(Activity.RESULT_OK, returnIntent);
+                finish();
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+            }
+        }
     }
 
     private void backToPreviousActivity() {
@@ -153,17 +172,17 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
     @Override
     public void onResponse(Call<SuggestionList> call, Response<SuggestionList> response) {
         Gson gson = new Gson();
-        if(response.isSuccessful()) {
-            SuggestionList changesList =  (SuggestionList) response.body();
+        if (response.isSuccessful()) {
+            SuggestionList changesList = (SuggestionList) response.body();
             System.out.print("onResponse" + gson.toJson(changesList));
-            Log.e("GET", "onSuccess: " + changesList );
+            Log.e("GET", "onSuccess: " + changesList);
         } else {
             try {
-                Log.e("ERROR", "onResponse: " + response.errorBody().string() );
+                Log.e("ERROR", "onResponse: " + response.errorBody().string());
                 JSONObject jObjError = new JSONObject(response.errorBody().string());
 
-                Log.e("GET", "onErrorBody: " + jObjError.get("message") );
-                Log.e("GET", "onErrorBody: " + jObjError.get("code") );
+                Log.e("GET", "onErrorBody: " + jObjError.get("message"));
+                Log.e("GET", "onErrorBody: " + jObjError.get("code"));
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -175,6 +194,6 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Callba
     @Override
     public void onFailure(Call<SuggestionList> call, Throwable t) {
         t.printStackTrace();
-        Log.e("GET", "onFailure: " + t.getMessage() );
+        Log.e("GET", "onFailure: " + t.getMessage());
     }
 }

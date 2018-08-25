@@ -59,7 +59,7 @@
         <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.MessagesActivity" />
         <activity android:name=".activity.PermissionRequestActivity" />
-        <activity android:name=".AutoCompleteKeyboardActivity" />
+        <activity android:name=".activity.AutoCompleteKeyboardActivity" />
         <activity android:name=".activity.LocationSelectorMapActivity"></activity>
     </application>
 

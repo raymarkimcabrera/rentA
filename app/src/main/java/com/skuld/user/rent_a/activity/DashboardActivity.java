@@ -3,45 +3,36 @@ package com.skuld.user.rent_a.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
-import com.skuld.user.rent_a.AutoCompleteKeyboardActivity;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.reverse_geocoder.Address;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
+import com.skuld.user.rent_a.model.reverse_geocoder.Location;
 
-import org.w3c.dom.Text;
-
-import java.io.Serializable;
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener {
 
@@ -51,7 +42,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     public static final int REQUEST_CODE_PERMISSION_LOCATION = 102;
 
 
-    private static int REQUEST_CODE_EDIT_TEXTFIELD = 1;
+    public static int REQUEST_CODE_EDIT_TEXTFIELD = 1;
     public static int REQUEST_CODE_MAP_LOCATION_SELECT = 2;
 
     @BindView(R.id.navigationView)
@@ -73,6 +64,11 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private boolean paused;
     public PositioningManager posManager;
 
+    public static Intent newIntent(Context context) {
+        Intent intent = new Intent(context, DashboardActivity.class);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +82,11 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         initializeMaps();
 
         posManager = PositioningManager.getInstance();
+    }
+
+    @Override
+    protected int setLayoutResourceID() {
+        return R.layout.activity_dashboard;
     }
 
     @Override
@@ -136,12 +137,21 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         if (requestCode == REQUEST_CODE_EDIT_TEXTFIELD) {
             if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
+
                 int editTextId = bundle.getInt(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID);
                 String text = bundle.getString(AutoCompleteKeyboardActivity.RESULT_TEXT);
                 boolean removeFocusAfter = bundle.getBoolean(AutoCompleteKeyboardActivity.RESULT_REMOVE_FOCUS_AFTER);
-
+                Location location = (Location) bundle.getSerializable("location");
                 TextView textView = (TextView) findViewById(editTextId);
-                textView.setText(text);
+
+                if (text != null) {
+                    textView.setText(text);
+                }
+
+                if (location != null) {
+                    String address = location.getAddress().getFullAddress();
+                    textView.setText(address);
+                }
 
                 if (removeFocusAfter) {
                     textView.clearFocus();
@@ -149,32 +159,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
             }
             if (resultCode == Activity.RESULT_CANCELED) {
             }
-        } else if (requestCode == REQUEST_CODE_MAP_LOCATION_SELECT){
-            if (resultCode == Activity.RESULT_OK){
-
-            }
-
-            if (resultCode == Activity.RESULT_CANCELED){
-
-            }
         }
-    }
-
-
-    public static Intent newIntent(Context context) {
-        Intent intent = new Intent(context, DashboardActivity.class);
-        return intent;
-    }
-
-    public static Intent newIntent(Context context, Address address, DisplayPosition displayPosition) {
-        Intent intent = new Intent(context, DashboardActivity.class);
-        intent.putExtra("addresss",  address);
-        return intent;
-    }
-
-    @Override
-    protected int setLayoutResourceID() {
-        return R.layout.activity_dashboard;
     }
 
 
@@ -309,6 +294,9 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         startActivityForResult(intent, REQUEST_CODE_EDIT_TEXTFIELD);
     }
 
+    private void getLocationDetailsFromLocationSelectorActivity() {
+
+    }
 
 }
 
