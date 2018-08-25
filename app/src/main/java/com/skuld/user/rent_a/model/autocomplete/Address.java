@@ -29,52 +29,15 @@ public class Address implements Serializable {
 	@SerializedName("houseNumber")
 	private String houseNumber;
 
-	public void setCountry(String country){
-		this.country = country;
+	public void setHouseNumber(String houseNumber){
+		this.houseNumber = houseNumber;
 	}
 
-	public String getCountry(){
-		return country;
-	}
-
-	public void setCity(String city){
-		this.city = city;
-	}
-
-	public String getCity(){
-		return city;
-	}
-
-	public void setStreet(String street){
-		this.street = street;
-	}
-
-	public String getStreet(){
-		return street;
-	}
-
-	public void setDistrict(String district){
-		this.district = district;
-	}
-
-	public String getDistrict(){
-		return district;
-	}
-
-	public void setPostalCode(String postalCode){
-		this.postalCode = postalCode;
-	}
-
-	public String getPostalCode(){
-		return postalCode;
-	}
-
-	public void setCounty(String county){
-		this.county = county;
-	}
-
-	public String getCounty(){
-		return county;
+	public String getHouseNumber(){
+		if (houseNumber != null){
+			return houseNumber;
+		}
+		return "";
 	}
 
 	public void setState(String state){
@@ -85,14 +48,66 @@ public class Address implements Serializable {
 		return state;
 	}
 
-	public void setHouseNumber(String houseNumber){
-		this.houseNumber = houseNumber;
+	public void setCountry(String country){
+		this.country = country;
 	}
 
-	public String getHouseNumber(){
-		return houseNumber;
+	public String getCountry(){
+		return country;
 	}
 
+	public void setStreet(String street){
+		this.street = street;
+	}
+
+	public String getStreet(){
+		if (street != null){
+			return street;
+		}
+		return "";
+	}
+
+	public void setPostalCode(String postalCode){
+		this.postalCode = postalCode;
+	}
+
+	public String getPostalCode(){
+		return postalCode;
+	}
+
+	public void setCity(String city){
+		this.city = city;
+	}
+
+	public String getCity(){
+		if (city != null){
+			return city;
+		}
+		return "";
+	}
+
+	public void setCounty(String county){
+		this.county = county;
+	}
+
+	public String getCounty(){
+		return county;
+	}
+
+	public void setDistrict(String district){
+		this.district = district;
+	}
+
+	public String getDistrict(){
+		if (district != null){
+			return district;
+		}
+		return "";
+	}
+
+	public String getFullAddress(){
+		return getHouseNumber() + " " + getStreet() + " " + getDistrict() + " "+ getCity();
+	}
 	@Override
  	public String toString(){
 		return 
