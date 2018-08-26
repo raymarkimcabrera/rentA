@@ -75,7 +75,6 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
     }
 
     private int mEditTextId;
-    private boolean mRemoveFocusAfter;
 
     private Context mContext;
     private AutoCompletePresenter mAutoCompletePresenter;
@@ -88,7 +87,6 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
 
         Bundle bundle = getIntent().getExtras();
         mEditTextId = bundle.getInt(ARGS_EDIT_TEXT_ID);
-        mRemoveFocusAfter = bundle.getBoolean(ARGS_REMOVE_FOCUS_AFTER);
 
         mContext = this;
 
@@ -158,11 +156,11 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
             if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 int editTextId = bundle.getInt(RESULT_EDIT_TEXT_ID);
-                Location location = (Location) bundle.getSerializable("location");
+                Location location = (Location) bundle.getSerializable(DashboardActivity.LOCATION);
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(RESULT_EDIT_TEXT_ID, editTextId);
-                returnIntent.putExtra("location", location);
+                returnIntent.putExtra(DashboardActivity.LOCATION, location);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -175,7 +173,6 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
         Intent returnIntent = new Intent();
         returnIntent.putExtra(RESULT_EDIT_TEXT_ID, mEditTextId);
         returnIntent.putExtra(RESULT_TEXT, mEditText.getText().toString());
-        returnIntent.putExtra(RESULT_REMOVE_FOCUS_AFTER, mRemoveFocusAfter);
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }
@@ -200,5 +197,11 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
     @Override
     public void onLocationDetailsSuccess(ReverseGeocoderResponse reverseGeocoderResponse) {
         Log.e(TAG, "onLocationDetailsSuccess: " + reverseGeocoderResponse );
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra(RESULT_EDIT_TEXT_ID, mEditTextId);
+        returnIntent.putExtra(DashboardActivity.LOCATION, reverseGeocoderResponse.getLocationDetails());
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
     }
 }

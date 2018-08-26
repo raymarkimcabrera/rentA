@@ -111,7 +111,7 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
     public void onLocationDetailsSuccess(ReverseGeocoderResponse response) {
         Intent returnIntent = new Intent();
         returnIntent.putExtra(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID, mEditTextID);
-        returnIntent.putExtra("location", response.getLocationDetails());
+        returnIntent.putExtra(DashboardActivity.LOCATION, response.getLocationDetails());
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

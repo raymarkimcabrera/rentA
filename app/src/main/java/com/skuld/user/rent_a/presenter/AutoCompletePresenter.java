@@ -27,7 +27,7 @@ public class AutoCompletePresenter extends BasePresenter {
         this.mContext = mContext;
     }
 
-    public AutoCompletePresenter(Context mContextApiInterface, ApiInterface mApiInterface, LocationDetailsView locationDetailsView) {
+    public AutoCompletePresenter(Context mContext, ApiInterface mApiInterface, LocationDetailsView locationDetailsView) {
         this.mApiInterface = mApiInterface;
         this.mLocationDetailsView = locationDetailsView;
         this.mContext = mContext;
@@ -50,17 +50,19 @@ public class AutoCompletePresenter extends BasePresenter {
     }
 
     public void getLocationDetailsByID(String locationID){
+        showProgressDialog(mContext);
         Call<ReverseGeocoderResponse> locationDetails = mApiInterface.getLocationDetailsByID(locationID);
 
         locationDetails.enqueue(new Callback<ReverseGeocoderResponse>() {
             @Override
             public void onResponse(Call<ReverseGeocoderResponse> call, Response<ReverseGeocoderResponse> response) {
+                hideProgressDialog();
                 mLocationDetailsView.onLocationDetailsSuccess(response.body());
             }
 
             @Override
             public void onFailure(Call<ReverseGeocoderResponse> call, Throwable t) {
-
+                hideProgressDialog();
             }
         });
     }

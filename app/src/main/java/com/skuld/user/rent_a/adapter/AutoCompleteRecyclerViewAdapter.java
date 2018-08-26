@@ -39,7 +39,7 @@ public class AutoCompleteRecyclerViewAdapter extends  RecyclerView.Adapter<AutoC
     public AutoCompleteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.suggestion_places_list_item, parent, false);
         AutoCompleteViewHolder cardsViewHolder = new AutoCompleteViewHolder(view);
-        cardsViewHolder.setIsRecyclable(true);
+        cardsViewHolder.setIsRecyclable(false);
         return cardsViewHolder;
     }
 

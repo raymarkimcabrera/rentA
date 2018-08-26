@@ -18,11 +18,13 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.MapMarker;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
@@ -30,6 +32,7 @@ import com.skuld.user.rent_a.model.reverse_geocoder.Address;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 import com.skuld.user.rent_a.model.reverse_geocoder.Location;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
@@ -40,7 +43,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     public static final int REQUEST_CODE_PERMISSION_STORAGE = 101;
     public static final int REQUEST_CODE_PERMISSION_LOCATION = 102;
-
+    public static final String LOCATION = "LOCATION";
 
     public static int REQUEST_CODE_EDIT_TEXTFIELD = 1;
     public static int REQUEST_CODE_MAP_LOCATION_SELECT = 2;
@@ -63,6 +66,12 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private Map mMap;
     private boolean paused;
     public PositioningManager posManager;
+    private Location mDestinationLocation;
+    private Location mPickUpLocation;
+    private MapMarker mDestinationMarker;
+    private MapMarker mPickUpMarker;
+    private GeoCoordinate mDestinationGeoCoordinate;
+    private GeoCoordinate mPickUpGeoCoordinate;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
@@ -139,13 +148,36 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 Bundle bundle = data.getExtras();
 
                 int editTextId = bundle.getInt(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID);
-                String text = bundle.getString(AutoCompleteKeyboardActivity.RESULT_TEXT);
-                boolean removeFocusAfter = bundle.getBoolean(AutoCompleteKeyboardActivity.RESULT_REMOVE_FOCUS_AFTER);
-                Location location = (Location) bundle.getSerializable("location");
+                Location location = (Location) bundle.getSerializable(LOCATION);
                 TextView textView = (TextView) findViewById(editTextId);
+                com.here.android.mpa.common.Image displayImage = new com.here.android.mpa.common.Image();
 
-                if (text != null) {
-                    textView.setText(text);
+                try {
+                    displayImage.setImageResource(R.drawable.ic_location);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (editTextId == R.id.destinationTextView) {
+                    if (mDestinationMarker != null)
+                        mMap.removeMapObject(mDestinationMarker);
+
+                    mDestinationLocation = location;
+                    DisplayPosition destinationDisplayPosition = location.getDisplayPosition();
+                    mDestinationGeoCoordinate = new GeoCoordinate(destinationDisplayPosition.getLatitude(), destinationDisplayPosition.getLongitude());
+                    mDestinationMarker = new MapMarker(mDestinationGeoCoordinate, displayImage);
+                    mMap.addMapObject(mDestinationMarker);
+
+                } else if (editTextId == R.id.pickUpTextView) {
+
+                    if (mPickUpMarker != null)
+                        mMap.removeMapObject(mPickUpMarker);
+
+                    mPickUpLocation = location;
+                    DisplayPosition pickUpLocationDisplayPosition = mPickUpLocation.getDisplayPosition();
+                    mPickUpGeoCoordinate = new GeoCoordinate(pickUpLocationDisplayPosition.getLatitude(), pickUpLocationDisplayPosition.getLongitude());
+                    mPickUpMarker = new MapMarker(mPickUpGeoCoordinate, displayImage);
+                    mMap.addMapObject(mPickUpMarker);
                 }
 
                 if (location != null) {
@@ -153,9 +185,6 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                     textView.setText(address);
                 }
 
-                if (removeFocusAfter) {
-                    textView.clearFocus();
-                }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
             }
@@ -260,8 +289,6 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private void setCenterAndZoom(GeoPosition geoPosition) {
         mMap.setZoomLevel(mMap.getMaxZoomLevel() - 2);
         Log.i(TAG, "setCenterAndZoom: " + mMap.getMaxZoomLevel());
-//// Get the zoom level back
-//            double zoom = mMap.getZoomLevel();
     }
 
     private void getLocation() {
