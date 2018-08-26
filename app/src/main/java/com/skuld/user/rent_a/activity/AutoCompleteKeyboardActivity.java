@@ -12,31 +12,22 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.adapter.AutoCompleteRecyclerViewAdapter;
-import com.skuld.user.rent_a.model.autocomplete.SuggestionList;
 import com.skuld.user.rent_a.model.autocomplete.SuggestionsItem;
-import com.skuld.user.rent_a.model.reverse_geocoder.Location;
+import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
 import com.skuld.user.rent_a.presenter.AutoCompletePresenter;
 import com.skuld.user.rent_a.utils.GeneralUtils;
 import com.skuld.user.rent_a.views.LocationDetailsView;
 import com.skuld.user.rent_a.views.SuggestionsView;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.List;
 
 import butterknife.BindView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AutoCompleteKeyboardActivity extends BaseActivity implements LocationDetailsView, SuggestionsView, AutoCompleteRecyclerViewAdapter.OnItemClickLister {
     public static final String TAG = AutoCompleteKeyboardActivity.class.getSimpleName();
@@ -156,11 +147,11 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
             if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 int editTextId = bundle.getInt(RESULT_EDIT_TEXT_ID);
-                Location location = (Location) bundle.getSerializable(DashboardActivity.LOCATION);
+                Locations locations = (Locations) bundle.getSerializable(DashboardActivity.LOCATION);
 
                 Intent returnIntent = new Intent();
                 returnIntent.putExtra(RESULT_EDIT_TEXT_ID, editTextId);
-                returnIntent.putExtra(DashboardActivity.LOCATION, location);
+                returnIntent.putExtra(DashboardActivity.LOCATION, locations);
                 setResult(Activity.RESULT_OK, returnIntent);
                 finish();
             }
@@ -196,7 +187,8 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
 
     @Override
     public void onLocationDetailsSuccess(ReverseGeocoderResponse reverseGeocoderResponse) {
-        Log.e(TAG, "onLocationDetailsSuccess: " + reverseGeocoderResponse );
+        Gson gson = new Gson();
+        Log.e(TAG, "onLocationDetailsSuccess: " + gson.toJson(reverseGeocoderResponse) );
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra(RESULT_EDIT_TEXT_ID, mEditTextId);

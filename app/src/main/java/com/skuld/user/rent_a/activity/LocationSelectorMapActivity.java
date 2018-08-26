@@ -12,7 +12,7 @@ import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
-import com.skuld.user.rent_a.model.reverse_geocoder.Location;
+import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
 import com.skuld.user.rent_a.presenter.LocationSelectorMapPresenter;
 import com.skuld.user.rent_a.views.LocationDetailsView;
@@ -101,10 +101,10 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
 
     @Override
     public void onReverseGeoCoderCallSuccess(ReverseGeocoderResponse response) {
-        Location location = response.getLocationDetails();
+        Locations locations = response.getLocationDetails();
         mApiInterface = getLocationDetailsByIDAPI();
         mLocationSelecctorMapPresenter = new LocationSelectorMapPresenter(mContext, mApiInterface, (LocationDetailsView) this);
-        mLocationSelecctorMapPresenter.getLocationDetailsByID(location.getLocationId());
+        mLocationSelecctorMapPresenter.getLocationDetailsByID(locations.getLocationId());
     }
 
     @Override

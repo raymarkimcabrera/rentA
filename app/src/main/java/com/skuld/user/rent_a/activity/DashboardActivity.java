@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -16,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
@@ -25,19 +25,24 @@ import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
+import com.here.android.mpa.mapping.MapRoute;
+import com.here.android.mpa.routing.RouteManager;
+import com.here.android.mpa.routing.RouteOptions;
+import com.here.android.mpa.routing.RoutePlan;
+import com.here.android.mpa.routing.RouteResult;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
-import com.skuld.user.rent_a.model.reverse_geocoder.Address;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
-import com.skuld.user.rent_a.model.reverse_geocoder.Location;
+import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 import butterknife.BindView;
 
-public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener {
+public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener {
 
     private static final String TAG = DashboardActivity.class.getSimpleName();
 
@@ -66,12 +71,13 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private Map mMap;
     private boolean paused;
     public PositioningManager posManager;
-    private Location mDestinationLocation;
-    private Location mPickUpLocation;
+    private Locations mDestinationLocations;
+    private Locations mPickUpLocations;
     private MapMarker mDestinationMarker;
     private MapMarker mPickUpMarker;
     private GeoCoordinate mDestinationGeoCoordinate;
     private GeoCoordinate mPickUpGeoCoordinate;
+    private MapRoute mMapRoute;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
@@ -148,7 +154,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 Bundle bundle = data.getExtras();
 
                 int editTextId = bundle.getInt(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID);
-                Location location = (Location) bundle.getSerializable(LOCATION);
+                Locations locations = (Locations) bundle.getSerializable(LOCATION);
                 TextView textView = (TextView) findViewById(editTextId);
                 com.here.android.mpa.common.Image displayImage = new com.here.android.mpa.common.Image();
 
@@ -162,8 +168,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                     if (mDestinationMarker != null)
                         mMap.removeMapObject(mDestinationMarker);
 
-                    mDestinationLocation = location;
-                    DisplayPosition destinationDisplayPosition = location.getDisplayPosition();
+                    mDestinationLocations = locations;
+                    DisplayPosition destinationDisplayPosition = mDestinationLocations.getDisplayPosition();
                     mDestinationGeoCoordinate = new GeoCoordinate(destinationDisplayPosition.getLatitude(), destinationDisplayPosition.getLongitude());
                     mDestinationMarker = new MapMarker(mDestinationGeoCoordinate, displayImage);
                     mMap.addMapObject(mDestinationMarker);
@@ -173,15 +179,30 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                     if (mPickUpMarker != null)
                         mMap.removeMapObject(mPickUpMarker);
 
-                    mPickUpLocation = location;
-                    DisplayPosition pickUpLocationDisplayPosition = mPickUpLocation.getDisplayPosition();
+                    mPickUpLocations = locations;
+                    DisplayPosition pickUpLocationDisplayPosition = mPickUpLocations.getDisplayPosition();
                     mPickUpGeoCoordinate = new GeoCoordinate(pickUpLocationDisplayPosition.getLatitude(), pickUpLocationDisplayPosition.getLongitude());
                     mPickUpMarker = new MapMarker(mPickUpGeoCoordinate, displayImage);
                     mMap.addMapObject(mPickUpMarker);
                 }
 
-                if (location != null) {
-                    String address = location.getAddress().getFullAddress();
+                if (mPickUpGeoCoordinate != null && mDestinationGeoCoordinate != null) {
+                    RouteManager rm = new RouteManager();
+                    RoutePlan routePlan = new RoutePlan();
+                    routePlan.addWaypoint(mDestinationGeoCoordinate);
+                    routePlan.addWaypoint(mPickUpGeoCoordinate);
+
+                    RouteOptions routeOptions = new RouteOptions();
+                    routeOptions.setTransportMode(RouteOptions.TransportMode.CAR);
+                    routeOptions.setRouteType(RouteOptions.Type.FASTEST);
+
+                    routePlan.setRouteOptions(routeOptions);
+
+                    rm.calculateRoute(routePlan, this);
+                }
+
+                if (locations != null) {
+                    String address = locations.getAddress().getFullAddress();
                     textView.setText(address);
                 }
 
@@ -243,10 +264,6 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
         mMapFragment.init(this);
 
-//        FirebaseDatabase database = FirebaseDatabase.getInstance();
-//        DatabaseReference myRef = database.getReference("message");
-//
-//        myRef.setValue("Hello, World!");
     }
 
 
@@ -269,11 +286,22 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     public void onPositionUpdated(PositioningManager.LocationMethod locationMethod, GeoPosition geoPosition, boolean b) {
 //        if (!paused) {
-        Log.i(TAG, "onPositionUpdated: " + geoPosition.getCoordinate());
         if (mMap != null) {
+
+            if (mDestinationGeoCoordinate != null && mPickUpGeoCoordinate != null) {
+                float[] resultsArray = new float[2];
+                Location location = new Location("");
+                location.distanceBetween(mDestinationGeoCoordinate.getLatitude(),
+                        mDestinationGeoCoordinate.getLongitude(),
+                        mPickUpGeoCoordinate.getLatitude(),
+                        mPickUpGeoCoordinate.getLongitude(), resultsArray);
+                Log.i(TAG, "coordinate_between: " + resultsArray[0]);
+                mMap.getPositionIndicator().setVisible(false);
+                return;
+            }
             mMap.setCenter(geoPosition.getCoordinate(),
                     Map.Animation.NONE);
-            setCenterAndZoom(geoPosition);
+//            setCenterAndZoom(geoPosition);e
             mMap.getPositionIndicator().setVisible(true);
         }
 
@@ -321,10 +349,27 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         startActivityForResult(intent, REQUEST_CODE_EDIT_TEXTFIELD);
     }
 
-    private void getLocationDetailsFromLocationSelectorActivity() {
+    @Override
+    public void onProgress(int i) {
 
     }
 
+    @Override
+    public void onCalculateRouteFinished(RouteManager.Error error, List<RouteResult> routeResult) {
+        Log.e(TAG, "onCalculateRouteFinished: " + error.name());
+        if (error == RouteManager.Error.NONE) {
+            // Render the route on the map
+            if (mMapRoute != null) {
+                mMap.removeMapObject(mMapRoute);
+                mMap = null;
+            }
+            mMapRoute = new MapRoute(routeResult.get(0).getRoute());
+            if (mMap != null)
+                mMap.addMapObject(mMapRoute);
+        } else {
+            Log.e(TAG, "onCalculateRouteFinished: " + error.name());
+        }
+    }
 }
 
 

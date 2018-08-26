@@ -18,7 +18,7 @@ public class ReverseGeocoderResponse implements Serializable {
         this.reverseGeocoder = reverseGeocoder;
     }
 
-    public Location getLocationDetails(){
-        return reverseGeocoder.getView().get(0).getResult().get(0).getLocation();
+    public Locations getLocationDetails(){
+        return reverseGeocoder.getView().get(0).getResult().get(0).getLocations();
     }
 }

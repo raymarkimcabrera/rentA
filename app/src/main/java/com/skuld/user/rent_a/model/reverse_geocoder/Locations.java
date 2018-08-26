@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Location implements Serializable {
+public class Locations implements Serializable {
 
 	@SerializedName("DisplayPosition")
 	private DisplayPosition displayPosition;
@@ -75,7 +75,7 @@ public class Location implements Serializable {
 	@Override
  	public String toString(){
 		return 
-			"Location{" + 
+			"Locations{" +
 			"displayPosition = '" + displayPosition + '\'' + 
 			",address = '" + address + '\'' + 
 			",locationId = '" + locationId + '\'' + 

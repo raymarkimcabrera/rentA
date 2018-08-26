@@ -8,7 +8,7 @@
     <string name="notifications">Notifications</string>
     <string name="drive_with_rent_a">Drive with Rent-A</string>
     <string name="settings">Settings</string>
-    <string name="permission_text">Rent-A need to access your location and storage permissions for the best experience you need.</string>
+    <string name="permission_text">Rent-A need to access your locations and storage permissions for the best experience you need.</string>
     <string name="find_a_vehicle">Find A Vehicle</string>
     <string name="select_location">Select Location</string>
 </resources>

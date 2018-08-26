@@ -22,7 +22,7 @@ public class ResultItem implements Serializable {
 	private double distance;
 
 	@SerializedName("Location")
-	private Location location;
+	private Locations locations;
 
 	public void setRelevance(double relevance){
 		this.relevance = relevance;
@@ -64,12 +64,12 @@ public class ResultItem implements Serializable {
 		return distance;
 	}
 
-	public void setLocation(Location location){
-		this.location = location;
+	public void setLocations(Locations locations){
+		this.locations = locations;
 	}
 
-	public Location getLocation(){
-		return location;
+	public Locations getLocations(){
+		return locations;
 	}
 
 	@Override
@@ -81,7 +81,7 @@ public class ResultItem implements Serializable {
 			",matchQuality = '" + matchQuality + '\'' + 
 			",matchType = '" + matchType + '\'' + 
 			",distance = '" + distance + '\'' + 
-			",location = '" + location + '\'' + 
+			",locations = '" + locations + '\'' +
 			"}";
 		}
 }
