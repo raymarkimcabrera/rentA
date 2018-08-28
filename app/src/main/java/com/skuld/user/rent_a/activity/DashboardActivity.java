@@ -167,7 +167,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 if (editTextId == R.id.destinationTextView) {
                     if (mDestinationMarker != null)
                         mMap.removeMapObject(mDestinationMarker);
-
+                    
                     mDestinationLocations = locations;
                     DisplayPosition destinationDisplayPosition = mDestinationLocations.getDisplayPosition();
                     mDestinationGeoCoordinate = new GeoCoordinate(destinationDisplayPosition.getLatitude(), destinationDisplayPosition.getLongitude());
@@ -357,18 +357,23 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     public void onCalculateRouteFinished(RouteManager.Error error, List<RouteResult> routeResult) {
         Log.e(TAG, "onCalculateRouteFinished: " + error.name());
-        if (error == RouteManager.Error.NONE) {
-            // Render the route on the map
-            if (mMapRoute != null) {
-                mMap.removeMapObject(mMapRoute);
-                mMap = null;
-            }
-            mMapRoute = new MapRoute(routeResult.get(0).getRoute());
-            if (mMap != null)
+        if (mMap != null){
+            if (error == RouteManager.Error.NONE) {
+                // Render the route on the map
+                if (mMapRoute != null) {
+                    mMap.removeMapObject(mMapRoute);
+                    mMapRoute = null;
+                }
+                mMapRoute = new MapRoute(routeResult.get(0).getRoute());
+
                 mMap.addMapObject(mMapRoute);
-        } else {
-            Log.e(TAG, "onCalculateRouteFinished: " + error.name());
+            } else {
+                Log.e(TAG, "onCalculateRouteFinished: " + error.name());
+                mMap.removeMapObject(mMapRoute);
+                mMapRoute = null;
+            }
         }
+
     }
 }
 

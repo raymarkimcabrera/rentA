@@ -102,7 +102,7 @@ public class LoginActivity extends BaseActivity {
                                     Log.i(TAG, "onCompleted: " + jsonObject.getString("email"));
                                     Toast.makeText(LoginActivity.this, "" + jsonObject.getString("email"), Toast.LENGTH_SHORT).show();
                                     finish();
-                                    startActivity(DashboardActivity.newIntent(mContext));
+                                    startActivity(PermissionRequestActivity.newIntent(mContext));
 
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -194,6 +194,9 @@ public class LoginActivity extends BaseActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 //                            updateUI(user);
+                            finish();
+                            startActivity(PermissionRequestActivity.newIntent(mContext));
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
