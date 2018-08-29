@@ -99,7 +99,8 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
         mBackImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                backToPreviousActivity();
+                finish();
+//                backToPreviousActivity();
             }
         });
 
