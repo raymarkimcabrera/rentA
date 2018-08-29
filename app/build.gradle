@@ -14,10 +14,26 @@ android {
 
         multiDexEnabled true
     }
+
+    signingConfigs {
+        release {
+            keyAlias 'renta'
+            keyPassword 'raymarkim'
+            storeFile file('../rentAKeyStore.jks')
+            storePassword 'raymarkim'
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "facebook_app_id", "237773163519396"
+            resValue "string", "fb_login_protocol_scheme", "fb237773163519396"
+            resValue "string", "here_app_id", "y5fHswCIlivtUId6Ehsr"
+            resValue "string", "here_app_token", "USe_2O9CqyXBcEmltKQOtA"
+            resValue "string", "here_api_version", "6.2"
         }
         debug {
             resValue "string", "facebook_app_id", "237773163519396"
