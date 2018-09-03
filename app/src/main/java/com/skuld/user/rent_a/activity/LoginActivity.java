@@ -61,6 +61,10 @@ public class LoginActivity extends BaseActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
 
+    public static Intent newIntent(Context context){
+        Intent intent = new Intent(context, LoginActivity.class);
+        return intent;
+    }
     // ...
     @Override
     protected void onCreate(Bundle savedInstanceState) {

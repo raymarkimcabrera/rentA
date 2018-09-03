@@ -91,12 +91,6 @@ public abstract class BaseActivity extends AppCompatActivity{
     }
 
 //    END API Functions
-
-//    Firebase database
-    public FirebaseFirestore getFirebaseDatabase(){
-        return FirebaseFirestore.getInstance();
-    }
-//    END Firebase database
     protected abstract int setLayoutResourceID();
 
     public void setTitle(String title) {

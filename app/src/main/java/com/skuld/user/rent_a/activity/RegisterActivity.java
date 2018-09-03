@@ -14,9 +14,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
-import com.skuld.user.rent_a.database.Table;
 import com.skuld.user.rent_a.model.user.User;
+import com.skuld.user.rent_a.presenter.RegisterPresenter;
 import com.skuld.user.rent_a.utils.GeneralUtils;
+import com.skuld.user.rent_a.views.RegisterView;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +25,7 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class RegisterActivity extends BaseActivity {
+public class RegisterActivity extends BaseActivity implements RegisterView {
 
     @BindView(R.id.firstNameEditText)
     EditText mFirstNameEditText;
@@ -48,6 +49,8 @@ public class RegisterActivity extends BaseActivity {
     EditText mConfirmPasswordEditText;
 
     private String firstName, middleName, lastName, email, password, confirmPassword, contactNumber;
+    private RegisterPresenter mRegisterPresenter;
+    private Context mContext;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, RegisterActivity.class);
@@ -57,6 +60,10 @@ public class RegisterActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mContext = this;
+
+        initPresenter();
     }
 
     @Override
@@ -64,6 +71,9 @@ public class RegisterActivity extends BaseActivity {
         return R.layout.activity_register;
     }
 
+    private void initPresenter() {
+        mRegisterPresenter = new RegisterPresenter(mContext, this);
+    }
 
     @OnClick({R.id.signUpButton, R.id.loginTextView})
     void onClick(View view) {
@@ -71,8 +81,9 @@ public class RegisterActivity extends BaseActivity {
             case R.id.signUpButton:
                 signUpUser();
                 break;
-
             case R.id.loginButton:
+                finish();
+                startActivity(LoginActivity.newIntent(mContext));
                 break;
         }
     }
@@ -80,34 +91,9 @@ public class RegisterActivity extends BaseActivity {
     private void signUpUser() {
         prepareData();
         if (isValidInputs()) {
-
-            mDatabase = getFirebaseDatabase();
-
-            User user = new User();
-            user.setFirstName(firstName);
-            if (!middleName.isEmpty())
-                user.setMiddleName(middleName);
-            user.setLastName(lastName);
-            user.setEmail(email);
-            user.setContactNumber(contactNumber);
-            user.setPassword(password);
-
-            mDatabase.collection("users")
-                    .add(user)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Toast.makeText(mContext, "Successfully added document ID: " + documentReference.getId(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(mContext, "Didn't save to the database ", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            mRegisterPresenter.registerUser(firstName, middleName, lastName, email, contactNumber, password);
         } else {
-            Toast.makeText(mContext, "Please input all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, "Please input all the fields", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -126,11 +112,21 @@ public class RegisterActivity extends BaseActivity {
 
     private void prepareData() {
         firstName = mFirstNameEditText.getText().toString().trim();
-        middleName = mMiddleNameEditText.getText().toString().trim();
+        middleName = mMiddleNameEditText.getText().toString().trim().equals("") ? "" : mMiddleNameEditText.getText().toString().trim();
         lastName = mLastNameEditText.getText().toString().trim();
         email = mEmailEditText.getText().toString().trim();
         password = mPasswordEditText.getText().toString().trim();
         confirmPassword = mConfirmPasswordEditText.getText().toString().trim();
         contactNumber = mContactNumberEditText.getText().toString().trim();
+    }
+
+    @Override
+    public void onRegisterSuccess(DocumentReference documentReference) {
+        Toast.makeText(mContext, "Registration Success", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRegisterFailed(String message) {
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 }
