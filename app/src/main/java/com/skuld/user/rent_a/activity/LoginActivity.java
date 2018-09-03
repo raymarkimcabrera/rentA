@@ -34,6 +34,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.utils.PrefUtil;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,7 +60,8 @@ public class LoginActivity extends BaseActivity {
     private Context mContext;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-// ...
+
+    // ...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,8 +82,8 @@ public class LoginActivity extends BaseActivity {
         prefUtil = new PrefUtil(this);
         LoginButton mLoginButton = (LoginButton) findViewById(R.id.fb_login);
 
-        SignInButton signInButton = findViewById(R.id.sign_in_button);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
+        SignInButton signInButton = findViewById(R.id.gmail_signin_button);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
 
         mLoginButton.setReadPermissions("email");
         mLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -139,7 +141,7 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == GMAIL_SIGNIN){
+        if (requestCode == GMAIL_SIGNIN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 // Google Sign In was successful, authenticate with Firebase
@@ -162,15 +164,19 @@ public class LoginActivity extends BaseActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
     }
 
-    @OnClick({R.id.loginButton,R.id.sign_in_button})
-    void onClick(View view){
-        switch (view.getId()){
+    @OnClick({R.id.loginButton, R.id.gmail_signin_button, R.id.registerButton})
+    void onClick(View view) {
+        switch (view.getId()) {
             case R.id.loginButton:
                 finish();
                 startActivity(PermissionRequestActivity.newIntent(mContext));
                 break;
-            case R.id.sign_in_button:
-                    signIn();
+            case R.id.gmail_signin_button:
+                signIn();
+                break;
+            case R.id.registerButton:
+                finish();
+                startActivity(RegisterActivity.newIntent(mContext));
                 break;
         }
 

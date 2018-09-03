@@ -83,10 +83,12 @@
             android:layout_marginBottom="15dp"/>
 
         <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/registerButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Back"
-            android:layout_marginBottom="20dp"/>
+            android:text="@string/sign_up"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/blue"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -128,7 +130,7 @@
 
 
             <com.google.android.gms.common.SignInButton
-                android:id="@+id/sign_in_button"
+                android:id="@+id/gmail_signin_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"

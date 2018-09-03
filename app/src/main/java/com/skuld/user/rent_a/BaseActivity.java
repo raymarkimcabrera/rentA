@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.skuld.user.rent_a.rest.ApiInterface;
@@ -33,6 +34,10 @@ public abstract class BaseActivity extends AppCompatActivity{
     protected Toolbar mToolbar;
 
     protected ApiInterface mApiInterface;
+
+    protected FirebaseFirestore mDatabase;
+
+    protected String mUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +92,11 @@ public abstract class BaseActivity extends AppCompatActivity{
 
 //    END API Functions
 
+//    Firebase database
+    public FirebaseFirestore getFirebaseDatabase(){
+        return FirebaseFirestore.getInstance();
+    }
+//    END Firebase database
     protected abstract int setLayoutResourceID();
 
     public void setTitle(String title) {
