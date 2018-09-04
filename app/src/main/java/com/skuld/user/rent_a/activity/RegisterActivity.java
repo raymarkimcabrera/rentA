@@ -19,14 +19,24 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.presenter.RegisterPresenter;
 import com.skuld.user.rent_a.utils.GeneralUtils;
+import com.skuld.user.rent_a.views.GoogleLoginView;
 import com.skuld.user.rent_a.views.RegisterView;
 
 import org.json.JSONException;
@@ -39,9 +49,11 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class RegisterActivity extends BaseActivity implements RegisterView {
+public class RegisterActivity extends BaseActivity implements RegisterView, GoogleLoginView {
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
+    private final static int GMAIL_SIGNIN = 100;
+
     @BindView(R.id.firstNameEditText)
     EditText mFirstNameEditText;
 
@@ -67,6 +79,8 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     private RegisterPresenter mRegisterPresenter;
     private Context mContext;
     private CallbackManager callbackManager;
+    private GoogleSignInClient mGoogleSignInClient;
+    private FirebaseAuth mAuth;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, RegisterActivity.class);
@@ -86,11 +100,16 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
         initPresenter();
 
         initFacebookSignUp();
+
+        initGmailSignUp();
     }
 
     private void initFacebookSignUp() {
         LoginButton mLoginButton = (LoginButton) findViewById(R.id.signUpFacebookButton);
-        mLoginButton.setReadPermissions(Arrays.asList("email", "first_name", "last_name"));
+        mLoginButton.setReadPermissions(Arrays.asList("email", "public_profile"));
+
+        mRegisterPresenter = new RegisterPresenter(mContext, (RegisterView) this);
+
         mLoginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -103,6 +122,7 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
                             public void onCompleted(JSONObject jsonObject,
                                                     GraphResponse response) {
                                 try {
+
                                     mRegisterPresenter.registerUser(jsonObject.getString("first_name"),
                                             "",
                                             jsonObject.getString("last_name"),
@@ -137,13 +157,43 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
         });
     }
 
+    private void initGmailSignUp(){
+        SignInButton signInButton = findViewById(R.id.signUpGmailButton);
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        mAuth = FirebaseAuth.getInstance();
+    }
+
     @Override
     protected int setLayoutResourceID() {
         return R.layout.activity_register;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == GMAIL_SIGNIN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                // Google Sign In was successful, authenticate with Firebase
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                mRegisterPresenter = new RegisterPresenter(mContext, (GoogleLoginView) this);
+                mRegisterPresenter.firebaseAuthWithGoogle(this, mAuth, account);
+            } catch (ApiException e) {
+                // Google Sign In failed, update UI appropriately
+                Log.w(TAG, "Google sign in failed", e);
+                // ...
+            }
+        } else {
+            callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
     private void initPresenter() {
-        mRegisterPresenter = new RegisterPresenter(mContext, this);
+
     }
 
     @OnClick({R.id.signUpButton, R.id.loginTextView, R.id.signUpGmailButton})
@@ -155,6 +205,10 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
             case R.id.loginButton:
                 finish();
                 startActivity(LoginActivity.newIntent(mContext));
+                break;
+            case R.id.signUpGmailButton:
+                Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+                startActivityForResult(signInIntent, GMAIL_SIGNIN);
                 break;
         }
     }
@@ -194,10 +248,24 @@ public class RegisterActivity extends BaseActivity implements RegisterView {
     @Override
     public void onRegisterSuccess(DocumentReference documentReference) {
         Toast.makeText(mContext, "Registration Success", Toast.LENGTH_SHORT).show();
+        LoginManager.getInstance().logOut();
     }
 
     @Override
     public void onRegisterFailed(String message) {
         Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+        LoginManager.getInstance().logOut();
+    }
+
+    @Override
+    public void onGmailLoginSuccess(FirebaseUser user) {
+//        Toast.makeText(mContext, "Gmail Login Success: " + user.getEmail(), Toast.LENGTH_SHORT).show();
+        mRegisterPresenter = new RegisterPresenter(mContext, (RegisterView) this);
+        mRegisterPresenter.registerUser("","","", user.getEmail(), user.getPhoneNumber(), "");
+    }
+
+    @Override
+    public void onGmailLoginError(String message) {
+        Toast.makeText(mContext, "Gmail SignUp Error: " + message, Toast.LENGTH_SHORT).show();
     }
 }

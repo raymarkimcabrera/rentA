@@ -123,7 +123,6 @@ public class LoginActivity extends BaseActivity {
                 request.executeAsync();
             }
 
-
             @Override
             public void onCancel() {
                 Log.d(TAG, "Login attempt cancelled.");
@@ -192,7 +191,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
-        Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -203,6 +201,7 @@ public class LoginActivity extends BaseActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
 //                            updateUI(user);
                             finish();
                             startActivity(PermissionRequestActivity.newIntent(mContext));
