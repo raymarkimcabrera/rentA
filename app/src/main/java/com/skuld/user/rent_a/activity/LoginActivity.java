@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatEditText;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -33,19 +34,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.presenter.LoginPresenter;
 import com.skuld.user.rent_a.utils.PrefUtil;
+import com.skuld.user.rent_a.views.LoginView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Arrays;
-
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseActivity implements LoginView{
 
     private final static String TAG = LoginActivity.class.getSimpleName();
 
@@ -54,12 +53,19 @@ public class LoginActivity extends BaseActivity {
     @BindView(R.id.loginButton)
     AppCompatButton mLoginButton;
 
+    @BindView(R.id.emailAddressEditText)
+    AppCompatEditText mEmailAddressEditText;
+
+    @BindView(R.id.passwordEditText)
+    AppCompatEditText mPasswordEditText;
+
     private String mFbToken;
     private CallbackManager callbackManager;
     private PrefUtil prefUtil;
     private Context mContext;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    private LoginPresenter mLoginPresenter;
 
     public static Intent newIntent(Context context){
         Intent intent = new Intent(context, LoginActivity.class);
@@ -74,6 +80,8 @@ public class LoginActivity extends BaseActivity {
 
 
         mContext = this;
+
+        initPresenter();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -103,13 +111,9 @@ public class LoginActivity extends BaseActivity {
                                                     GraphResponse response) {
 
                                 // Getting FB User Data
-//                                Bundle facebookData = getFacebookData(jsonObject);
                                 try {
-                                    Log.i(TAG, "onCompleted: " + jsonObject.getString("email"));
-                                    Toast.makeText(LoginActivity.this, "" + jsonObject.getString("email"), Toast.LENGTH_SHORT).show();
-                                    finish();
-                                    startActivity(PermissionRequestActivity.newIntent(mContext));
-
+                                    mLoginPresenter.loginUser(jsonObject.getString("email"), "");
+                                    LoginManager.getInstance().logOut();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -175,7 +179,7 @@ public class LoginActivity extends BaseActivity {
                 startActivity(PermissionRequestActivity.newIntent(mContext));
                 break;
             case R.id.gmail_signin_button:
-                signIn();
+                signInWithGmail();
                 break;
             case R.id.registerButton:
                 finish();
@@ -185,11 +189,20 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-    private void signIn() {
+    private void initPresenter(){
+        mLoginPresenter = new LoginPresenter(mContext, this);
+    }
+
+    private void signInWithGmail() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, GMAIL_SIGNIN);
     }
 
+    private void signIn(){
+        String email = mEmailAddressEditText.getText().toString().trim();
+        String password = mPasswordEditText.getText().toString().trim();
+        mLoginPresenter.loginUser(email,password);
+    }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
@@ -201,10 +214,7 @@ public class LoginActivity extends BaseActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-
-//                            updateUI(user);
-                            finish();
-                            startActivity(PermissionRequestActivity.newIntent(mContext));
+                            mLoginPresenter.loginUser(user.getEmail(), "");
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -215,5 +225,16 @@ public class LoginActivity extends BaseActivity {
                         // ...
                     }
                 });
+    }
+
+    @Override
+    public void onLoginSuccess(String userID) {
+        finish();
+        startActivity(PermissionRequestActivity.newIntent(mContext));
+    }
+
+    @Override
+    public void onLoginError() {
+        Toast.makeText(mContext, "Login error", Toast.LENGTH_SHORT).show();
     }
 }
