@@ -34,6 +34,9 @@ public class LoginPresenter extends BasePresenter {
                     hideProgressDialog();
                     String userID = queryDocumentSnapshots.getDocuments().get(0).getId();
                     mLoginView.onLoginSuccess(userID);
+                } else {
+                    hideProgressDialog();
+                    mLoginView.onLoginError();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

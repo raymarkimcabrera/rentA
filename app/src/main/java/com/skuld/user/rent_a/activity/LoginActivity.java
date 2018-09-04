@@ -44,7 +44,7 @@ import org.json.JSONObject;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class LoginActivity extends BaseActivity implements LoginView{
+public class LoginActivity extends BaseActivity implements LoginView {
 
     private final static String TAG = LoginActivity.class.getSimpleName();
 
@@ -67,10 +67,11 @@ public class LoginActivity extends BaseActivity implements LoginView{
     private GoogleSignInClient mGoogleSignInClient;
     private LoginPresenter mLoginPresenter;
 
-    public static Intent newIntent(Context context){
+    public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, LoginActivity.class);
         return intent;
     }
+
     // ...
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,8 +176,7 @@ public class LoginActivity extends BaseActivity implements LoginView{
     void onClick(View view) {
         switch (view.getId()) {
             case R.id.loginButton:
-                finish();
-                startActivity(PermissionRequestActivity.newIntent(mContext));
+                signIn();
                 break;
             case R.id.gmail_signin_button:
                 signInWithGmail();
@@ -189,7 +189,7 @@ public class LoginActivity extends BaseActivity implements LoginView{
 
     }
 
-    private void initPresenter(){
+    private void initPresenter() {
         mLoginPresenter = new LoginPresenter(mContext, this);
     }
 
@@ -198,11 +198,15 @@ public class LoginActivity extends BaseActivity implements LoginView{
         startActivityForResult(signInIntent, GMAIL_SIGNIN);
     }
 
-    private void signIn(){
+    private void signIn() {
         String email = mEmailAddressEditText.getText().toString().trim();
         String password = mPasswordEditText.getText().toString().trim();
-        mLoginPresenter.loginUser(email,password);
+        if (!email.isEmpty() && !password.isEmpty())
+            mLoginPresenter.loginUser(email, password);
+        else
+            Toast.makeText(mContext, "Please complete all fields.", Toast.LENGTH_SHORT).show();
     }
+
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
