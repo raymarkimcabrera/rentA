@@ -44,4 +44,29 @@ public class LoginPresenter extends BasePresenter {
             }
         });
     }
+
+    public void loginWithFacebookOrGmail(String email){
+        initFirebase();
+
+        showProgressDialog(mContext);
+        Query authenticateUser = mFirebaseFirestore.collection("users")
+                .whereEqualTo("email", email);
+
+        authenticateUser.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                if (queryDocumentSnapshots.getDocuments().size() !=0) {
+                    hideProgressDialog();
+                    String userID = queryDocumentSnapshots.getDocuments().get(0).getId();
+                    mLoginView.onLoginSuccess(userID);
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                hideProgressDialog();
+                mLoginView.onLoginError();
+            }
+        });
+    }
 }

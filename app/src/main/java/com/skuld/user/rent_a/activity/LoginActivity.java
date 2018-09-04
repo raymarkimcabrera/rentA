@@ -112,7 +112,7 @@ public class LoginActivity extends BaseActivity implements LoginView{
 
                                 // Getting FB User Data
                                 try {
-                                    mLoginPresenter.loginUser(jsonObject.getString("email"), "");
+                                    mLoginPresenter.loginWithFacebookOrGmail(jsonObject.getString("email"));
                                     LoginManager.getInstance().logOut();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -214,7 +214,7 @@ public class LoginActivity extends BaseActivity implements LoginView{
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            mLoginPresenter.loginUser(user.getEmail(), "");
+                            mLoginPresenter.loginWithFacebookOrGmail(user.getEmail());
 
                         } else {
                             // If sign in fails, display a message to the user.
