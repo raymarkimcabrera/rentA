@@ -2,6 +2,8 @@ package com.skuld.user.rent_a.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
@@ -12,12 +14,16 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.applandeo.materialcalendarview.CalendarView;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -33,14 +39,20 @@ import com.here.android.mpa.routing.RouteResult;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.dialog.FindAVehicleDialog;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
+import com.skuld.user.rent_a.model.transaction.Transaction;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 
 public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener {
 
@@ -78,6 +90,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private GeoCoordinate mDestinationGeoCoordinate;
     private GeoCoordinate mPickUpGeoCoordinate;
     private MapRoute mMapRoute;
+    private int mYear, mMonth, mDay;
+    private Transaction mTransaction;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
@@ -147,6 +161,13 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         return super.onOptionsItemSelected(item);
     }
 
+    @OnClick(R.id.findVehicleButton)
+    void onClick() {
+        FindAVehicleDialog findAVehicleDialog = FindAVehicleDialog.build(mContext,mTransaction);
+
+        findAVehicleDialog.show(((Activity) mContext).getFragmentManager(), TAG);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CODE_EDIT_TEXTFIELD) {
@@ -155,7 +176,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
                 int editTextId = bundle.getInt(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID);
                 Locations locations = (Locations) bundle.getSerializable(LOCATION);
-                TextView textView = (TextView) findViewById(editTextId);
+                TextView textView = findViewById(editTextId);
                 com.here.android.mpa.common.Image displayImage = new com.here.android.mpa.common.Image();
 
                 try {
@@ -167,7 +188,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                 if (editTextId == R.id.destinationTextView) {
                     if (mDestinationMarker != null)
                         mMap.removeMapObject(mDestinationMarker);
-                    
+
                     mDestinationLocations = locations;
                     DisplayPosition destinationDisplayPosition = mDestinationLocations.getDisplayPosition();
                     mDestinationGeoCoordinate = new GeoCoordinate(destinationDisplayPosition.getLatitude(), destinationDisplayPosition.getLongitude());
@@ -291,7 +312,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
             if (mDestinationGeoCoordinate != null && mPickUpGeoCoordinate != null) {
                 float[] resultsArray = new float[2];
                 Location location = new Location("");
-                location.distanceBetween(mDestinationGeoCoordinate.getLatitude(),
+                Location.distanceBetween(mDestinationGeoCoordinate.getLatitude(),
                         mDestinationGeoCoordinate.getLongitude(),
                         mPickUpGeoCoordinate.getLatitude(),
                         mPickUpGeoCoordinate.getLongitude(), resultsArray);
@@ -357,7 +378,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     public void onCalculateRouteFinished(RouteManager.Error error, List<RouteResult> routeResult) {
         Log.e(TAG, "onCalculateRouteFinished: " + error.name());
-        if (mMap != null){
+        if (mMap != null) {
             if (error == RouteManager.Error.NONE) {
                 // Render the route on the map
                 if (mMapRoute != null) {

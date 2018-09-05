@@ -35,7 +35,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.presenter.LoginPresenter;
-import com.skuld.user.rent_a.utils.PrefUtil;
+import com.skuld.user.rent_a.utils.Preferences;
 import com.skuld.user.rent_a.views.LoginView;
 
 import org.json.JSONException;
@@ -61,7 +61,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     private String mFbToken;
     private CallbackManager callbackManager;
-    private PrefUtil prefUtil;
     private Context mContext;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
@@ -92,7 +91,6 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
         mAuth = FirebaseAuth.getInstance();
 
-        prefUtil = new PrefUtil(this);
         LoginButton mLoginButton = (LoginButton) findViewById(R.id.fb_login);
 
         SignInButton signInButton = findViewById(R.id.gmail_signin_button);
@@ -233,6 +231,7 @@ public class LoginActivity extends BaseActivity implements LoginView {
 
     @Override
     public void onLoginSuccess(String userID) {
+        Preferences.setString(mContext, Preferences.USER_ID, userID);
         finish();
         startActivity(PermissionRequestActivity.newIntent(mContext));
     }

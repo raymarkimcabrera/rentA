@@ -37,7 +37,6 @@ public abstract class BaseActivity extends AppCompatActivity{
 
     protected FirebaseFirestore mDatabase;
 
-    protected String mUserID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

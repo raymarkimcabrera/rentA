@@ -13,7 +13,7 @@ android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "com.skuld.user.rent_a"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 27
 
         versionCode versionMajor * 10000 + versionMinor * 1000 + versionPatch * 100 + buildNumber
@@ -99,6 +99,7 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.0.2'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
 
-
+    //Material Calendar View
+    implementation 'com.applandeo:material-calendar-view:1.4.0'
 }
 apply plugin: 'com.google.gms.google-services'
