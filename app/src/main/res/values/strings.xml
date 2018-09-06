@@ -26,4 +26,14 @@
     <string name="confirm_password">Confirm Password</string>
     <string name="submit">Submit</string>
     <string name="travel_date">Travel Date:</string>
+
+    <string-array name="vehicle_type">
+        <item>Van</item>
+        <item>SUV</item>
+        <item>Car</item>
+        <item>Bus</item>
+        <item>Shuttle Bus</item>
+        <item>Mini Bus</item>
+        <item>Jeep</item>
+    </string-array>
 </resources>
