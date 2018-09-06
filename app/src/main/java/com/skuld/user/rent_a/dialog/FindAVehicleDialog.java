@@ -2,6 +2,7 @@ package com.skuld.user.rent_a.dialog;
 
 import android.app.DatePickerDialog;
 import android.app.DialogFragment;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,13 +12,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
-import com.applandeo.materialcalendarview.CalendarView;
+import com.google.firebase.Timestamp;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,13 +37,20 @@ public class FindAVehicleDialog extends DialogFragment {
     @BindView(R.id.dateEndedTextView)
     TextView mDateEndedTextView;
 
+    @BindView(R.id.timeStartedTextView)
+    TextView mTimeStartedTextView;
+
+    @BindView(R.id.timeEndedTextView)
+    TextView mTimeEndedTextView;
+
+
     @BindView(R.id.submitButton)
     Button mSubmitButton;
 
     private Unbinder mUnbinder;
     private static Context mContext;
     private static Transaction mTransaction;
-    private int mYear, mMonth, mDay;
+    private int mYear, mMonth, mDay, mHour, mMinute;
 
     public static FindAVehicleDialog build(Context context, Transaction transaction) {
         Bundle args = new Bundle();
@@ -52,7 +64,7 @@ public class FindAVehicleDialog extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NORMAL,R.style.Dialog_STYLE_Transaction);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.Dialog_STYLE_Transaction);
     }
 
     @Nullable
@@ -75,18 +87,27 @@ public class FindAVehicleDialog extends DialogFragment {
         mUnbinder.unbind();
     }
 
-    @OnClick({R.id.dateEndedTextView, R.id.dateStartedTextView})
-    void onClick(View view){
-        switch (view.getId()){
+    @OnClick({R.id.dateEndedTextView, R.id.dateStartedTextView, R.id.timeEndedTextView, R.id.timeStartedTextView})
+    void onClick(View view) {
+        switch (view.getId()) {
             case R.id.dateEndedTextView:
-                    showDatePickerDialog(mDateEndedTextView);
+                showDatePickerDialog(mDateEndedTextView);
                 break;
 
             case R.id.dateStartedTextView:
-                    showDatePickerDialog(mDateStartedTextView);
+                showDatePickerDialog(mDateStartedTextView);
+                break;
+
+            case R.id.timeEndedTextView:
+                showTimePickerDialog(mTimeEndedTextView);
+                break;
+
+            case R.id.timeStartedTextView:
+                showTimePickerDialog(mTimeStartedTextView);
                 break;
         }
     }
+
     private void showDatePickerDialog(final TextView textView) {
         final Calendar calendar = Calendar.getInstance();
         mYear = calendar.get(Calendar.YEAR);
@@ -96,14 +117,42 @@ public class FindAVehicleDialog extends DialogFragment {
         DatePickerDialog datePickerDialog = new DatePickerDialog(mContext, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-//                String dateSelected =
-//                textView.setText("" + dayOfMonth + "/" + month + "/" + year);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy");
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(year, month, dayOfMonth);
+                String dateFormatted = simpleDateFormat.format(calendar.getTime());
+                textView.setText(dateFormatted);
+
             }
 
         }, mYear, mMonth, mDay);
 
         datePickerDialog.create();
         datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog(final TextView textView) {
+        final Calendar calendar = Calendar.getInstance();
+
+        mHour =  calendar.get(Calendar.HOUR_OF_DAY);
+        mMinute =  calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(mContext, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                Calendar calendar = Calendar.getInstance();
+
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+
+                DateFormat dateFormat = android.text.format.DateFormat.getTimeFormat(mContext);
+                textView.setText(dateFormat.format(calendar.getTime()));
+
+            }
+        },mHour,mMinute, false);
+
+        timePickerDialog.create();
+        timePickerDialog.show();
     }
 }

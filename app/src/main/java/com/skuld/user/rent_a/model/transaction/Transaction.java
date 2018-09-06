@@ -1,8 +1,9 @@
 package com.skuld.user.rent_a.model.transaction;
 
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.gson.annotations.SerializedName;
-import com.google.type.Date;
+
 
 public class Transaction {
 
@@ -25,10 +26,10 @@ public class Transaction {
     private String conversationID;
 
     @SerializedName("start_date")
-    private String startDate;
+    private Timestamp startDate;
 
     @SerializedName("end_date")
-    private Date endDate;
+    private Timestamp endDate;
 
     @SerializedName("total_amount")
     private int totalAmount;
@@ -43,7 +44,7 @@ public class Transaction {
     private int rating;
 
     @SerializedName("created_date")
-    private Date createdDate;
+    private Timestamp createdDate;
 
     public String getUserID() {
         return userID;
@@ -93,21 +94,7 @@ public class Transaction {
         this.conversationID = conversationID;
     }
 
-    public String getStartDate() {
-        return startDate;
-    }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
 
     public int getTotalAmount() {
         return totalAmount;
@@ -141,11 +128,27 @@ public class Transaction {
         this.rating = rating;
     }
 
-    public Date getCreatedDate() {
+    public Timestamp getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Timestamp startDate) {
+        this.startDate = startDate;
+    }
+
+    public Timestamp getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Timestamp endDate) {
+        this.endDate = endDate;
+    }
+
+    public Timestamp getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Date createdDate) {
+    public void setCreatedDate(Timestamp createdDate) {
         this.createdDate = createdDate;
     }
 }
