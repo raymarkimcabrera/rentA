@@ -20,6 +20,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="350dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -158,13 +159,14 @@
                     android:textStyle="bold" />
 
                 <Spinner
+                    android:id="@+id/typeOfVehicleSpinner"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".50"
                     android:drawSelectorOnTop="true"
+                    android:entries="@array/vehicle_type"
                     android:spinnerMode="dialog"
-                    android:theme="@style/SpinnerThemeLight"
-                    android:entries="@array/vehicle_type">
+                    android:theme="@style/SpinnerThemeLight">
 
                 </Spinner>
             </LinearLayout>
@@ -203,11 +205,14 @@
 
 
                 <EditText
+                    android:id="@+id/passengerNumberEditText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight=".50"
                     android:background="@drawable/background_transparent"
-                    android:hint="Pick a number">
+                    android:hint="Pick a number"
+                    android:gravity="center"
+                    android:inputType="number">
 
                 </EditText>
             </LinearLayout>
@@ -222,7 +227,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:padding="5dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -245,23 +251,26 @@
                 </LinearLayout>
 
                 <RadioGroup
+                    android:id="@+id/typeOfPaymentRadioGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <RadioButton
+                        android:id="@+id/allOutRadioButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".50"
-                        android:textColor="@color/black"
-                        android:text="All-out" />
+                        android:text="All-out"
+                        android:textColor="@color/black" />
 
                     <RadioButton
+                        android:id="@+id/separatePaymentRadioButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".50"
-                        android:textColor="@color/black"
-                        android:text="Separate Payments" />
+                        android:text="Separate Payments"
+                        android:textColor="@color/black" />
                 </RadioGroup>
             </LinearLayout>
 
@@ -286,31 +295,29 @@
 
 
                 <RadioGroup
+                    android:id="@+id/driverRadioGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <RadioButton
+                        android:id="@+id/withDriverRadioButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".50"
-                        android:textColor="@color/black"
-                        android:text="With driver" />
+                        android:text="With driver"
+                        android:textColor="@color/black" />
 
                     <RadioButton
+                        android:id="@+id/withoutDriverRadioButton"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight=".50"
-                        android:textColor="@color/black"
-                        android:text="Without driver" />
+                        android:text="Without driver"
+                        android:textColor="@color/black" />
                 </RadioGroup>
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="5dp"
-                android:background="@color/black" />
         </LinearLayout>
 
     </ScrollView>
