@@ -82,6 +82,10 @@ public class Transaction implements Serializable{
     @SerializedName("type_of_payment")
     private String typeOfPayment;
 
+    @Expose
+    @SerializedName("is_accepted")
+    private boolean isAccepted;
+
     public String getUserID() {
         return userID;
     }
@@ -225,5 +229,13 @@ public class Transaction implements Serializable{
 
     public void setPaymentID(String paymentID) {
         this.paymentID = paymentID;
+    }
+
+    public boolean isAccepted() {
+        return isAccepted;
+    }
+
+    public void setAccepted(boolean accepted) {
+        isAccepted = accepted;
     }
 }
