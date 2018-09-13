@@ -61,8 +61,10 @@
         <activity android:name=".activity.PermissionRequestActivity" />
         <activity android:name=".activity.AutoCompleteKeyboardActivity" />
         <activity android:name=".activity.LocationSelectorMapActivity" />
-        <activity android:name=".activity.RegisterActivity"
-            android:windowSoftInputMode="adjustPan"></activity>
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".activity.OffersActivity"></activity>
     </application>
 
 </manifest>

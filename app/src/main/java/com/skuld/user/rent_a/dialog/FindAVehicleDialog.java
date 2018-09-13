@@ -94,14 +94,20 @@ public class FindAVehicleDialog extends DialogFragment {
     private static Context mContext;
     private static Transaction mTransaction;
     private int mYear, mMonth, mDay, mHour, mMinute;
+    private static OnClickListener mOnClickListener;
 
-    public static FindAVehicleDialog build(Context context, Transaction transaction) {
+    public static FindAVehicleDialog build(Context context, Transaction transaction, OnClickListener onClickListener) {
         Bundle args = new Bundle();
         FindAVehicleDialog fragment = new FindAVehicleDialog();
         fragment.setArguments(args);
         mContext = context;
         mTransaction = transaction;
+        mOnClickListener = onClickListener;
         return fragment;
+    }
+
+    public interface OnClickListener{
+        void onSubmit(Transaction transaction);
     }
 
     @Override
@@ -207,6 +213,7 @@ public class FindAVehicleDialog extends DialogFragment {
         mTransaction.setWithDriver(mDriverRadioGroup.getCheckedRadioButtonId() == R.id.withDriverRadioButton);
         mTransaction.setPaymentStatus(PENDING);
 
+        mOnClickListener.onSubmit(mTransaction);
     }
 
     private void showDatePickerDialog(final TextView textView) {

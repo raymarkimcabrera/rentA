@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -37,7 +39,8 @@ public abstract class BaseActivity extends AppCompatActivity{
 
     protected FirebaseFirestore mDatabase;
 
-
+    private HttpLoggingInterceptor interceptor;
+    private OkHttpClient.Builder okHttpClientBuilder;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +55,11 @@ public abstract class BaseActivity extends AppCompatActivity{
             setSupportActionBar(mToolbar);
         }
 
+        interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+        okHttpClientBuilder = new OkHttpClient.Builder();
+        okHttpClientBuilder.addInterceptor(interceptor);
     }
 
     private Gson getGson() {
@@ -67,6 +75,7 @@ public abstract class BaseActivity extends AppCompatActivity{
          Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://autocomplete.geocoder.api.here.com/" + getString(R.string.here_api_version) + "/")
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
+                 .client(okHttpClientBuilder.build())
                 .build();
         return retrofit.create(ApiInterface.class);
     }
@@ -75,6 +84,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://reverse.geocoder.api.here.com/" + getString(R.string.here_api_version) + "/")
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .client(okHttpClientBuilder.build())
                 .build();
 
         return retrofit.create(ApiInterface.class);
@@ -84,6 +94,7 @@ public abstract class BaseActivity extends AppCompatActivity{
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://geocoder.api.here.com/" + getString(R.string.here_api_version) + "/")
                 .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .client(okHttpClientBuilder.build())
                 .build();
 
         return retrofit.create(ApiInterface.class);

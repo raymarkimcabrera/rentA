@@ -54,7 +54,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener {
+public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener, FindAVehicleDialog.OnClickListener {
 
     private static final String TAG = DashboardActivity.class.getSimpleName();
 
@@ -104,6 +104,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
         initialize();
 
+        mContext = this;
         initNavigationMenu();
 
         initViews();
@@ -163,7 +164,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     @OnClick(R.id.findVehicleButton)
     void onClick() {
-        FindAVehicleDialog findAVehicleDialog = FindAVehicleDialog.build(mContext,mTransaction);
+        FindAVehicleDialog findAVehicleDialog = FindAVehicleDialog.build(mContext, mTransaction, this);
 
         findAVehicleDialog.show(((Activity) mContext).getFragmentManager(), TAG);
     }
@@ -395,6 +396,11 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
             }
         }
 
+    }
+
+    @Override
+    public void onSubmit(Transaction transaction) {
+        startActivity(OffersActivity.newIntent(mContext));
     }
 }
 
