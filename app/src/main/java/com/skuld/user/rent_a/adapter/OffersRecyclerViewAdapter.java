@@ -2,6 +2,7 @@ package com.skuld.user.rent_a.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,7 +24,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class OffersRecyclerViewAdapter extends  RecyclerView.Adapter<OffersRecyclerViewAdapter.OffersRecyclerViewHolder>{
+public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecyclerViewAdapter.OffersRecyclerViewHolder> {
     public static final String TAG = OffersRecyclerViewAdapter.class.getSimpleName();
 
 
@@ -32,7 +33,7 @@ public class OffersRecyclerViewAdapter extends  RecyclerView.Adapter<OffersRecyc
     private OnClickListener mOnClickListener;
     private List<Transaction> mTransactionList;
 
-    public interface OnClickListener{
+    public interface OnClickListener {
 
         void onCarSelected(Car car);
     }
@@ -56,12 +57,20 @@ public class OffersRecyclerViewAdapter extends  RecyclerView.Adapter<OffersRecyc
     @Override
     public void onBindViewHolder(@NonNull OffersRecyclerViewAdapter.OffersRecyclerViewHolder holder, int position) {
         final Car car = mCarList.get(position);
+        float rating = 0;
 
+        for (Transaction transaction : mTransactionList) {
+            if (transaction.getCarID().equals(car.getId())) {
+                rating += transaction.getRating();
+            }
+        }
         ImageUtil.loadImageFromUrl(mContext, holder.mCarImageView, car.getImageUrl());
 
         holder.mPriceTextView.setText(car.getLowPrice() + " - " + car.getHighPrice());
 
-        holder.mOfferLinearLayout.setOnClickListener(new View.OnClickListener() {
+        holder.mRatingBar.setRating(rating);
+
+        holder.mOfferCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mOnClickListener.onCarSelected(car);
@@ -74,7 +83,7 @@ public class OffersRecyclerViewAdapter extends  RecyclerView.Adapter<OffersRecyc
         return mCarList.size();
     }
 
-    public class OffersRecyclerViewHolder extends RecyclerView.ViewHolder{
+    public class OffersRecyclerViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.carImageView)
         ImageView mCarImageView;
@@ -85,8 +94,8 @@ public class OffersRecyclerViewAdapter extends  RecyclerView.Adapter<OffersRecyc
         @BindView(R.id.ratingBar)
         RatingBar mRatingBar;
 
-        @BindView(R.id.offerLinearLayout)
-        LinearLayout mOfferLinearLayout;
+        @BindView(R.id.offerCardView)
+        CardView mOfferCardView;
 
         public OffersRecyclerViewHolder(View itemView) {
             super(itemView);

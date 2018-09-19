@@ -2,89 +2,88 @@ package com.skuld.user.rent_a.model.transaction;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.ServerTimestamp;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
-public class Transaction implements Serializable{
+public class Transaction implements Serializable {
 
     @Expose
-    @SerializedName("user_id")
+    @SerializedName("userID")
     private String userID;
 
     @Expose
-    @SerializedName("driver_id")
+    @SerializedName("driverID")
     private String driverID;
 
     @Expose
-    @SerializedName("payment_id")
+    @SerializedName("paymentID")
     private String paymentID;
 
     @Expose
-    @SerializedName("destination_location_id")
+    @SerializedName("destinationLocationID")
     private String destinationLocationID;
 
     @Expose
-    @SerializedName("pickup_location_id")
+    @SerializedName("pickupLocationID")
     private String pickupLocationID;
 
     @Expose
-    @SerializedName("car_id")
+    @SerializedName("carID")
     private String carID;
 
     @Expose
-    @SerializedName("conversation_id")
+    @SerializedName("conversationID")
     private String conversationID;
 
     @Expose
-    @SerializedName("start_date")
-    private Timestamp startDate;
+    @SerializedName("startDate")
+    private Date startDate;
 
     @Expose
-    @SerializedName("end_date")
-    private Timestamp endDate;
-
-    @Expose
-    @SerializedName("total_amount")
-    private int totalAmount;
-
-    @Expose
-    @SerializedName("payment_status")
-    private String paymentStatus;
-
-    @Expose
-    @SerializedName("mode_of_payment")
-    private String modeOfPayment;
+    @SerializedName("endDate")
+    private Date endDate;
 
     @Expose
     @SerializedName("rating")
     private int rating;
 
     @Expose
-    @SerializedName("created_date")
-    private Timestamp createdDate;
+    @SerializedName("createdDate")
+    @ServerTimestamp
+    private Date createdDate;
 
     @Expose
     @SerializedName("passengers")
     private int passengers;
 
     @Expose
-    @SerializedName("is_with_driver")
-    private boolean isWithDriver;
+    @SerializedName("driverSpecifications")
+    private String driverSpecifications;
 
     @Expose
-    @SerializedName("type_of_vehicle")
+    @SerializedName("typeOfVehicle")
     private String typeOfVehicle;
 
     @Expose
-    @SerializedName("type_of_payment")
+    @SerializedName("typeOfService")
+    private String typeOfService;
+
+    @Expose
+    @SerializedName("typeOfPayment")
     private String typeOfPayment;
 
     @Expose
-    @SerializedName("is_accepted")
+    @SerializedName("isAccepted")
     private boolean isAccepted;
+
+    @Expose
+    @SerializedName("remarks")
+    private String remarks;
 
     public String getUserID() {
         return userID;
@@ -134,31 +133,6 @@ public class Transaction implements Serializable{
         this.conversationID = conversationID;
     }
 
-
-    public int getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(int totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
-    public String getPaymentStatus() {
-        return paymentStatus;
-    }
-
-    public void setPaymentStatus(String paymentStatus) {
-        this.paymentStatus = paymentStatus;
-    }
-
-    public String getModeOfPayment() {
-        return modeOfPayment;
-    }
-
-    public void setModeOfPayment(String modeOfPayment) {
-        this.modeOfPayment = modeOfPayment;
-    }
-
     public int getRating() {
         return rating;
     }
@@ -167,27 +141,27 @@ public class Transaction implements Serializable{
         this.rating = rating;
     }
 
-    public Timestamp getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Timestamp startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public Timestamp getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Timestamp endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    public Timestamp getCreatedDate() {
+    public Date getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(Timestamp createdDate) {
+    public void setCreatedDate(Date createdDate) {
         this.createdDate = createdDate;
     }
 
@@ -199,12 +173,20 @@ public class Transaction implements Serializable{
         this.passengers = passengers;
     }
 
-    public boolean isWithDriver() {
-        return isWithDriver;
+    public String getDriverSpecifications() {
+        return driverSpecifications;
     }
 
-    public void setWithDriver(boolean withDriver) {
-        isWithDriver = withDriver;
+    public void setDriverSpecifications(String driverSpecifications) {
+        this.driverSpecifications = driverSpecifications;
+    }
+
+    public String getRemarks() {
+        return remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     public String getTypeOfVehicle() {
@@ -237,5 +219,13 @@ public class Transaction implements Serializable{
 
     public void setAccepted(boolean accepted) {
         isAccepted = accepted;
+    }
+
+    public String getTypeOfService() {
+        return typeOfService;
+    }
+
+    public void setTypeOfService(String typeOfService) {
+        this.typeOfService = typeOfService;
     }
 }

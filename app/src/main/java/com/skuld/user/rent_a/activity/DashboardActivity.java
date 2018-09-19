@@ -400,7 +400,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     @Override
     public void onSubmit(Transaction transaction) {
-        startActivity(OffersActivity.newIntent(mContext));
+        startActivity(OffersActivity.newIntent(mContext, transaction));
     }
 }
 

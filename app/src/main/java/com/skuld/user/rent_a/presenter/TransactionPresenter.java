@@ -25,15 +25,14 @@ public class TransactionPresenter extends BasePresenter {
         this.mTransactionView = mTransactionView;
     }
 
-    public void getTransactions(String userID) {
+    public void getTransactions() {
         mTransactionList = new ArrayList<>();
 
         initFirebase();
 
         showProgressDialog(mContext);
 
-        Query getTransactionQuery = mFirebaseFirestore.collection("transactions")
-                .whereEqualTo("user_id", userID);
+        Query getTransactionQuery = mFirebaseFirestore.collection("transactions");
 
         getTransactionQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override

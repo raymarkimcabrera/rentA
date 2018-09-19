@@ -2,6 +2,7 @@ package com.skuld.user.rent_a.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +22,7 @@ import com.skuld.user.rent_a.utils.Preferences;
 import com.skuld.user.rent_a.views.OffersView;
 import com.skuld.user.rent_a.views.TransactionView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +31,7 @@ import butterknife.BindView;
 public class OffersActivity extends BaseActivity implements OffersView, TransactionView {
 
     private static final String TAG = OffersActivity.class.getSimpleName();
-
+    private static final String TRANSACTION = "TRANSACTION";
 
     @BindView(R.id.offersRecyclerView)
     RecyclerView mOfferRecyclerView;
@@ -37,13 +39,15 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
     private List<Car> mCarList;
     private List<Transaction> mTransactionList;
     private OffersRecyclerViewAdapter mOffersRecyclerViewAdapter;
-
+    private Car mCar;
 
     private OffersPresenter mOffersPresenter;
     private TransactionPresenter mTransactionPresenter;
+    private Transaction mTransaction;
 
-    public static Intent newIntent(Context context) {
+    public static Intent newIntent(Context context, Transaction transaction) {
         Intent intent = new Intent(context, OffersActivity.class);
+        intent.putExtra(TRANSACTION, transaction);
         return intent;
     }
 
@@ -55,12 +59,19 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
         initPresenter();
 
+        getArgs();
 //        mCarList = new ArrayList<>();
         mTransactionList = new ArrayList<>();
 
-//        mTransactionPresenter.getTransactions("");
-        Log.i(TAG, "onCreate: ");
-        mOffersPresenter.getOffers();
+        mTransactionPresenter.getTransactions();
+    }
+
+    private void getArgs() {
+        Bundle extras = getIntent().getExtras();
+
+        if (extras != null) {
+            mTransaction = (Transaction) extras.getSerializable(TRANSACTION);
+        }
     }
 
     @Override
@@ -69,7 +80,6 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
     }
 
     private void initPresenter() {
-        Log.i(TAG, "initPresenter: ");
         mOffersPresenter = new OffersPresenter(mContext, this);
         mTransactionPresenter = new TransactionPresenter(mContext, this);
     }
@@ -79,7 +89,8 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
         mOffersRecyclerViewAdapter = new OffersRecyclerViewAdapter(mContext, carList, new OffersRecyclerViewAdapter.OnClickListener() {
             @Override
             public void onCarSelected(Car car) {
-
+                mTransaction.setCarID(car.getId());
+                startActivity(OfferDetailsActivity.newIntent(mContext,mTransaction));
             }
         }, mTransactionList);
 

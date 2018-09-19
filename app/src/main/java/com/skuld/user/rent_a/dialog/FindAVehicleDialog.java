@@ -48,6 +48,10 @@ public class FindAVehicleDialog extends DialogFragment {
     private final static String FULLY_PAID = "FULLY_PAID";
     private final static String PARTIALLY_PAID = "PARTIALLY_PAID";
     private final static String PENDING = "PENDING";
+    private final static String ONE_WAY = "ONE_WAY";
+    private final static String ROUND_TRIP = "ROUND_TRIP";
+    private final static String WITH_DRIVER = "WITH_DRIVER";
+    private final static String WITHOUT_DRIVER = "WITHOUT_DRIVER";
 
     @BindView(R.id.dateStartedTextView)
     TextView mDateStartedTextView;
@@ -89,6 +93,8 @@ public class FindAVehicleDialog extends DialogFragment {
     @BindView(R.id.withoutDriverRadioButton)
     RadioButton mWithOutDriverRadioButton;
 
+    @BindView(R.id.typeOfServiceRadioGroup)
+    RadioGroup mTypeOfServiceRadioGroup;
 
     private Unbinder mUnbinder;
     private static Context mContext;
@@ -106,7 +112,7 @@ public class FindAVehicleDialog extends DialogFragment {
         return fragment;
     }
 
-    public interface OnClickListener{
+    public interface OnClickListener {
         void onSubmit(Transaction transaction);
     }
 
@@ -170,7 +176,7 @@ public class FindAVehicleDialog extends DialogFragment {
         String dateEnded = mDateEndedTextView.getText().toString();
         String timeStarted = mTimeStartedTextView.getText().toString();
         String timeEnded = mTimeEndedTextView.getText().toString();
-        if (mPassengerNumberEditText.getText().toString().trim().isEmpty()){
+        if (mPassengerNumberEditText.getText().toString().trim().isEmpty()) {
             return false;
         }
         int passengers = Integer.parseInt(mPassengerNumberEditText.getText().toString());
@@ -199,19 +205,15 @@ public class FindAVehicleDialog extends DialogFragment {
         mTransaction = new Transaction();
         Log.i(TAG, "prepareData: " + dateStarted);
         Log.i(TAG, "prepareData: " + dateEnded);
-        Timestamp startTimeStamp = new Timestamp(dateStarted);
-        Timestamp endTimeStamp = new Timestamp(dateEnded);
 
-        Log.i(TAG, "prepareData: " + startTimeStamp);
-        Log.i(TAG, "prepareData: " + endTimeStamp);
         mTransaction.setUserID(Preferences.getString(mContext, Preferences.USER_ID));
-        mTransaction.setStartDate(startTimeStamp);
-        mTransaction.setEndDate(endTimeStamp);
+        mTransaction.setStartDate(dateStarted);
+        mTransaction.setEndDate(dateEnded);
         mTransaction.setTypeOfVehicle(mTypeOfVehicleSpinner.getSelectedItem().toString());
         mTransaction.setPassengers(Integer.parseInt(mPassengerNumberEditText.getText().toString()));
         mTransaction.setTypeOfPayment(mTypeOfPaymentRadioGroup.getCheckedRadioButtonId() == R.id.allOutRadioButton ? ALL_OUT : SEPERATE_PAYMENTS);
-        mTransaction.setWithDriver(mDriverRadioGroup.getCheckedRadioButtonId() == R.id.withDriverRadioButton);
-        mTransaction.setPaymentStatus(PENDING);
+        mTransaction.setDriverSpecifications(mDriverRadioGroup.getCheckedRadioButtonId() == R.id.withDriverRadioButton ? WITH_DRIVER: WITHOUT_DRIVER);
+        mTransaction.setTypeOfService(mTypeOfServiceRadioGroup.getCheckedRadioButtonId() == R.id.oneWayRadioButton ? ONE_WAY : ROUND_TRIP);
 
         mOnClickListener.onSubmit(mTransaction);
     }

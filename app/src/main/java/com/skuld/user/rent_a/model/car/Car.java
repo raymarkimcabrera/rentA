@@ -8,6 +8,10 @@ import java.io.Serializable;
 public class Car implements Serializable {
 
     @Expose
+    @SerializedName("id")
+    String id;
+
+    @Expose
     @SerializedName("driverID")
     String driverID;
 
@@ -89,5 +93,13 @@ public class Car implements Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }
