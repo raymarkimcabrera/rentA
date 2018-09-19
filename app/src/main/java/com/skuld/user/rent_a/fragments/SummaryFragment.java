@@ -11,10 +11,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.activity.DashboardActivity;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.presenter.SummaryPresenter;
 import com.skuld.user.rent_a.views.SummaryView;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -98,6 +106,24 @@ public class SummaryFragment extends Fragment implements SummaryView{
         mTypeOfPaymentTextView.setText(mTransaction.getTypeOfPayment());
         mWithDriverTextView.setText(mTransaction.getDriverSpecifications());
 
+        Calendar startCalendar = Calendar.getInstance();
+        Calendar endCalendar = Calendar.getInstance();
+
+        startCalendar.setTime(mTransaction.getStartDate());
+        endCalendar.setTime(mTransaction.getEndDate());
+
+        List<EventDay> eventDays = new ArrayList<>();
+
+        eventDays.add(new EventDay(startCalendar, R.drawable.event_circle));
+        eventDays.add(new EventDay(endCalendar, R.drawable.event_circle));
+
+        try {
+            mCalendarView.setDate(Calendar.getInstance());
+        } catch (OutOfDateRangeException e) {
+            e.printStackTrace();
+        }
+
+        mCalendarView.setEvents(eventDays);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -126,7 +152,7 @@ public class SummaryFragment extends Fragment implements SummaryView{
 
     @Override
     public void onBookingSuccess() {
-        Toast.makeText(mContext, "Booking Success", Toast.LENGTH_SHORT).show();
+        startActivity(DashboardActivity.newIntent(mContext));
     }
 
     @Override

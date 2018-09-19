@@ -17,10 +17,6 @@ public class Transaction implements Serializable {
     private String userID;
 
     @Expose
-    @SerializedName("driverID")
-    private String driverID;
-
-    @Expose
     @SerializedName("paymentID")
     private String paymentID;
 
@@ -91,14 +87,6 @@ public class Transaction implements Serializable {
 
     public void setUserID(String userID) {
         this.userID = userID;
-    }
-
-    public String getDriverID() {
-        return driverID;
-    }
-
-    public void setDriverID(String driverID) {
-        this.driverID = driverID;
     }
 
     public String getDestinationLocationID() {
