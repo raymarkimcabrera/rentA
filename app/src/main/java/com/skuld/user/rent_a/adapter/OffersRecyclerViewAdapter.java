@@ -59,11 +59,14 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
         final Car car = mCarList.get(position);
         float rating = 0;
 
-        for (Transaction transaction : mTransactionList) {
-            if (transaction.getCarID().equals(car.getId())) {
-                rating += transaction.getRating();
+        if (mTransactionList.size() > 0){
+            for (Transaction transaction : mTransactionList) {
+                if (transaction.getCarID().equals(car.getId())) {
+                    rating += transaction.getRating();
+                }
             }
         }
+
         ImageUtil.loadImageFromUrl(mContext, holder.mCarImageView, car.getImageUrl());
 
         holder.mPriceTextView.setText(car.getLowPrice() + " - " + car.getHighPrice());

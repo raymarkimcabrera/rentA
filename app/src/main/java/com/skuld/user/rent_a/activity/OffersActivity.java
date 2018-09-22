@@ -120,7 +120,7 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
     @Override
     public void onNoTransaction() {
-
+        mOffersPresenter.getOffers();
     }
 
     @Override
