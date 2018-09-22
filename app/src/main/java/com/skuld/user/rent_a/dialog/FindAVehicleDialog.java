@@ -38,20 +38,17 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 
 import static com.facebook.internal.FacebookDialogFragment.TAG;
+import static com.skuld.user.rent_a.BaseActivity.ALL_OUT;
+import static com.skuld.user.rent_a.BaseActivity.ONE_WAY;
+import static com.skuld.user.rent_a.BaseActivity.ROUND_TRIP;
+import static com.skuld.user.rent_a.BaseActivity.SEPERATE_PAYMENTS;
+import static com.skuld.user.rent_a.BaseActivity.WITHOUT_DRIVER;
+import static com.skuld.user.rent_a.BaseActivity.WITH_DRIVER;
 
 public class FindAVehicleDialog extends DialogFragment {
 
     private final static String EMPTY_DATE = "Click to select Date";
     private final static String EMPTY_TIME = "Click to select Time";
-    private final static String ALL_OUT = "ALL_OUT";
-    private final static String SEPERATE_PAYMENTS = "SEPERATE_PAYMENTS";
-    private final static String FULLY_PAID = "FULLY_PAID";
-    private final static String PARTIALLY_PAID = "PARTIALLY_PAID";
-    private final static String PENDING = "PENDING";
-    private final static String ONE_WAY = "ONE_WAY";
-    private final static String ROUND_TRIP = "ROUND_TRIP";
-    private final static String WITH_DRIVER = "WITH_DRIVER";
-    private final static String WITHOUT_DRIVER = "WITHOUT_DRIVER";
 
     @BindView(R.id.dateStartedTextView)
     TextView mDateStartedTextView;

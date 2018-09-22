@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class SummaryFragment extends Fragment implements SummaryView{
+import static com.skuld.user.rent_a.BaseActivity.ALL_OUT;
+import static com.skuld.user.rent_a.BaseActivity.ONE_WAY;
+import static com.skuld.user.rent_a.BaseActivity.WITH_DRIVER;
+import static com.skuld.user.rent_a.adapter.OffersRecyclerViewAdapter.TAG;
+
+public class SummaryFragment extends Fragment implements SummaryView {
     private static final String TRANSACTION = "TRANSACTION";
 
 
@@ -100,11 +106,11 @@ public class SummaryFragment extends Fragment implements SummaryView{
     }
 
     private void initUi() {
-        mTypeOfServiceTextView.setText(mTransaction.getTypeOfService());
+        mTypeOfServiceTextView.setText(mTransaction.getTypeOfService().equals(ONE_WAY) ? "One Way" : "Round Trip");
         mTypeOfVehicleTextView.setText(mTransaction.getTypeOfVehicle());
         mPassengersTextView.setText(String.valueOf(mTransaction.getPassengers()));
-        mTypeOfPaymentTextView.setText(mTransaction.getTypeOfPayment());
-        mWithDriverTextView.setText(mTransaction.getDriverSpecifications());
+        mTypeOfPaymentTextView.setText(mTransaction.getTypeOfPayment().equals(ALL_OUT) ? "All Out" : "Separate Payments");
+        mWithDriverTextView.setText(mTransaction.getDriverSpecifications().equals(WITH_DRIVER) ? "With Driver" : "Without Driver");
 
         Calendar startCalendar = Calendar.getInstance();
         Calendar endCalendar = Calendar.getInstance();
@@ -112,10 +118,6 @@ public class SummaryFragment extends Fragment implements SummaryView{
         startCalendar.setTime(mTransaction.getStartDate());
         endCalendar.setTime(mTransaction.getEndDate());
 
-        List<EventDay> eventDays = new ArrayList<>();
-
-        eventDays.add(new EventDay(startCalendar, R.drawable.event_circle));
-        eventDays.add(new EventDay(endCalendar, R.drawable.event_circle));
 
         try {
             mCalendarView.setDate(Calendar.getInstance());
@@ -123,7 +125,8 @@ public class SummaryFragment extends Fragment implements SummaryView{
             e.printStackTrace();
         }
 
-        mCalendarView.setEvents(eventDays);
+        mCalendarView.setMaximumDate(endCalendar);
+        mCalendarView.setMinimumDate(startCalendar);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -166,7 +169,7 @@ public class SummaryFragment extends Fragment implements SummaryView{
     }
 
     @OnClick(R.id.bookNowButton)
-    void onClick(){
+    void onClick() {
         mSummaryPresenter.bookTransaction(mTransaction);
     }
 }

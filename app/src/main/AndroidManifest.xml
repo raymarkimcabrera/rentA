@@ -65,7 +65,8 @@
             android:name=".activity.RegisterActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activity.OffersActivity" />
-        <activity android:name=".activity.OfferDetailsActivity"></activity>
+        <activity android:name=".activity.OfferDetailsActivity" />
+        <activity android:name=".activity.PaymentDetails"></activity>
     </application>
 
 </manifest>

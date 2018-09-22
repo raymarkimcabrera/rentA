@@ -31,6 +31,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public abstract class BaseActivity extends AppCompatActivity{
 
+    public final static String ALL_OUT = "ALL_OUT";
+    public final static String SEPERATE_PAYMENTS = "SEPERATE_PAYMENTS";
+    public final static String FULLY_PAID = "FULLY_PAID";
+    public final static String PARTIALLY_PAID = "PARTIALLY_PAID";
+    public final static String PENDING = "PENDING";
+    public final static String ONE_WAY = "ONE_WAY";
+    public final static String ROUND_TRIP = "ROUND_TRIP";
+    public final static String WITH_DRIVER = "WITH_DRIVER";
+    public final static String WITHOUT_DRIVER = "WITHOUT_DRIVER";
+
     protected Context mContext;
 
     protected Toolbar mToolbar;
