@@ -15,8 +15,11 @@ import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
 import com.skuld.user.rent_a.presenter.LocationSelectorMapPresenter;
+import com.skuld.user.rent_a.utils.ModelUtil;
 import com.skuld.user.rent_a.views.LocationDetailsView;
 import com.skuld.user.rent_a.views.ReverseGeoCoderView;
+
+import java.io.Serializable;
 
 import butterknife.OnClick;
 
@@ -112,6 +115,8 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
         Intent returnIntent = new Intent();
         returnIntent.putExtra(AutoCompleteKeyboardActivity.RESULT_EDIT_TEXT_ID, mEditTextID);
         returnIntent.putExtra(DashboardActivity.LOCATION, response.getLocationDetails());
+
+        Log.i(TAG, "onActivityResult: " + response.getLocationDetails().getLocationId());
         setResult(Activity.RESULT_OK, returnIntent);
         finish();
     }

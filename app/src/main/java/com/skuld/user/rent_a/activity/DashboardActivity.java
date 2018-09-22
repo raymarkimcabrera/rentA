@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -43,6 +44,7 @@ import com.skuld.user.rent_a.dialog.FindAVehicleDialog;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.utils.ModelUtil;
 
 import org.w3c.dom.Text;
 
@@ -105,6 +107,9 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         initialize();
 
         mContext = this;
+
+        mTransaction = new Transaction();
+
         initNavigationMenu();
 
         initViews();
@@ -171,6 +176,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == REQUEST_CODE_EDIT_TEXTFIELD) {
             if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
@@ -191,6 +197,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                         mMap.removeMapObject(mDestinationMarker);
 
                     mDestinationLocations = locations;
+                    mTransaction.setDestinationLocationID(locations.getLocationId());
+                    mTransaction.setDestinationAddress(locations.getAddress().getFullAddress());
                     DisplayPosition destinationDisplayPosition = mDestinationLocations.getDisplayPosition();
                     mDestinationGeoCoordinate = new GeoCoordinate(destinationDisplayPosition.getLatitude(), destinationDisplayPosition.getLongitude());
                     mDestinationMarker = new MapMarker(mDestinationGeoCoordinate, displayImage);
@@ -202,11 +210,17 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                         mMap.removeMapObject(mPickUpMarker);
 
                     mPickUpLocations = locations;
+                    mTransaction.setPickupLocationID(locations.getLocationId());
+                    mTransaction.setPickUpAddress(locations.getAddress().getFullAddress());
                     DisplayPosition pickUpLocationDisplayPosition = mPickUpLocations.getDisplayPosition();
                     mPickUpGeoCoordinate = new GeoCoordinate(pickUpLocationDisplayPosition.getLatitude(), pickUpLocationDisplayPosition.getLongitude());
                     mPickUpMarker = new MapMarker(mPickUpGeoCoordinate, displayImage);
                     mMap.addMapObject(mPickUpMarker);
                 }
+
+                mFindVehicleButton.setBackground(getDrawable(R.drawable.button_disabled_round_corner));
+                mFindVehicleButton.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+                mFindVehicleButton.setEnabled(false);
 
                 if (mPickUpGeoCoordinate != null && mDestinationGeoCoordinate != null) {
                     RouteManager rm = new RouteManager();
@@ -221,11 +235,17 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                     routePlan.setRouteOptions(routeOptions);
 
                     rm.calculateRoute(routePlan, this);
+
+                    mFindVehicleButton.setBackground(getDrawable(R.drawable.button_rounded_corner));
+                    mFindVehicleButton.setTextColor(ResourcesCompat.getColor(getResources(), R.color.white, null));
+                    mFindVehicleButton.setEnabled(true);
+
                 }
 
                 if (locations != null) {
                     String address = locations.getAddress().getFullAddress();
                     textView.setText(address);
+                    textView.setSelected(true);
                 }
 
             }
@@ -254,11 +274,14 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
                 switch (menuItem.getItemId()) {
                     case R.id.menuItemHome:
-                        break;
+                        return true;
 
                     case R.id.menuMessages:
-                        break;
-
+                        return true;
+                    case R.id.menuHistory:
+                        startActivity(TransactionsHistoryActivity.newIntent(mContext));
+                        finish();
+                        return true;
                 }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;

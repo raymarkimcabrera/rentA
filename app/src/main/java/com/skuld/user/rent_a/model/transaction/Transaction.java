@@ -81,6 +81,14 @@ public class Transaction implements Serializable {
     @SerializedName("remarks")
     private String remarks;
 
+    @Expose
+    @SerializedName("pickUpAddress")
+    private String pickUpAddress;
+
+    @Expose
+    @SerializedName("destinationAddress")
+    private String destinationAddress;
+
     public String getUserID() {
         return userID;
     }
@@ -215,5 +223,21 @@ public class Transaction implements Serializable {
 
     public void setTypeOfService(String typeOfService) {
         this.typeOfService = typeOfService;
+    }
+
+    public String getPickUpAddress() {
+        return pickUpAddress;
+    }
+
+    public void setPickUpAddress(String pickUpAddress) {
+        this.pickUpAddress = pickUpAddress;
+    }
+
+    public String getDestinationAddress() {
+        return destinationAddress;
+    }
+
+    public void setDestinationAddress(String destinationAddress) {
+        this.destinationAddress = destinationAddress;
     }
 }

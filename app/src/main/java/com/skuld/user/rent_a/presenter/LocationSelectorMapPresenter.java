@@ -1,6 +1,7 @@
 package com.skuld.user.rent_a.presenter;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
 import com.skuld.user.rent_a.rest.ApiInterface;
@@ -12,6 +13,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class LocationSelectorMapPresenter extends BasePresenter {
+    private static final String TAG = LocationSelectorMapPresenter.class.getSimpleName();
     private static final String REVERSE_GEOCODER_CALL_FLAG = "REVERSE_GEOCODER_CALL_FLAG";
     private static final String GET_LOCATION_FLAG = "GET_LOCATION_FLAG";
 

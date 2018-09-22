@@ -198,8 +198,6 @@ public class FindAVehicleDialog extends DialogFragment {
             e.printStackTrace();
         }
 
-
-        mTransaction = new Transaction();
         Log.i(TAG, "prepareData: " + dateStarted);
         Log.i(TAG, "prepareData: " + dateEnded);
 

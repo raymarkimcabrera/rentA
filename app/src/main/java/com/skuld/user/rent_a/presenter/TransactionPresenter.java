@@ -57,4 +57,37 @@ public class TransactionPresenter extends BasePresenter {
             }
         });
     }
+
+    public void getUserTransactions(String userID) {
+        mTransactionList = new ArrayList<>();
+
+        initFirebase();
+
+        showProgressDialog(mContext);
+
+        Query getTransactionQuery = mFirebaseFirestore.collection("transactions").whereEqualTo("userID", userID);
+
+        getTransactionQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                hideProgressDialog();
+                if (queryDocumentSnapshots.getDocuments().size() != 0) {
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
+                        mTransactionList.add(documentSnapshot.toObject(Transaction.class));
+                    }
+
+                    mTransactionView.onGetTransactionViewSuccess(mTransactionList);
+                } else {
+                    mTransactionView.onNoTransaction();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                hideProgressDialog();
+
+                mTransactionView.onGetTransactionViewError();
+            }
+        });
+    }
 }

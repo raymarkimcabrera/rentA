@@ -118,6 +118,7 @@ public class SummaryFragment extends Fragment implements SummaryView {
         startCalendar.setTime(mTransaction.getStartDate());
         endCalendar.setTime(mTransaction.getEndDate());
 
+        startCalendar.add(Calendar.DATE, -1);
 
         try {
             mCalendarView.setDate(Calendar.getInstance());

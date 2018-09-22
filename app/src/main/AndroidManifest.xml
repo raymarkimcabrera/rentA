@@ -66,6 +66,7 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activity.OffersActivity" />
         <activity android:name=".activity.OfferDetailsActivity" />
+        <activity android:name=".activity.TransactionsHistoryActivity"></activity>
     </application>
 
 </manifest>
