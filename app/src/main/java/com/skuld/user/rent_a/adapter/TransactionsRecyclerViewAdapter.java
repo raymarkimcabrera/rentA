@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.reverse_geocoder.ReverseGeocoderResponse;
@@ -33,7 +34,7 @@ public class TransactionsRecyclerViewAdapter extends RecyclerView.Adapter<Transa
     private OnClickTransactionListener mOnClickTransactionListener;
     private Transaction mTransaction = null;
 
-    public TransactionsRecyclerViewAdapter(Context mContext, List<Transaction> mTransactionList, OnClickTransactionListener mOnClickTransactionListener ) {
+    public TransactionsRecyclerViewAdapter(Context mContext, List<Transaction> mTransactionList, OnClickTransactionListener mOnClickTransactionListener) {
         this.mContext = mContext;
         this.mTransactionList = mTransactionList;
         this.mOnClickTransactionListener = mOnClickTransactionListener;
@@ -53,25 +54,26 @@ public class TransactionsRecyclerViewAdapter extends RecyclerView.Adapter<Transa
     }
 
     @Override
-    public void onBindViewHolder(@NonNull TransactionsViewHolder holder, int position) {
-        mTransaction = mTransactionList.get(position);
+    public void onBindViewHolder(@NonNull TransactionsViewHolder holder, final int position) {
+        final Transaction transaction = mTransactionList.get(position);
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy hh:mm aaa");
 
         holder.mPickUpTextView.setSelected(true);
-        holder.mPickUpTextView.setText(mTransaction.getPickUpAddress());
+        holder.mPickUpTextView.setText(transaction.getPickUpAddress());
         holder.mDestinationTextView.setSelected(true);
-        holder.mDestinationTextView.setText(mTransaction.getDestinationAddress());
+        holder.mDestinationTextView.setText(transaction.getDestinationAddress());
 
 
-        holder.mTransactionCreatedTextView.setText(simpleDateFormat.format(mTransaction.getCreatedDate()));
-        holder.mVehicleTypeTextView.setText(mTransaction.getTypeOfVehicle());
-        holder.mTransactionRatingBar.setRating(mTransaction.getRating());
+        holder.mTransactionCreatedTextView.setText(simpleDateFormat.format(transaction.getCreatedDate()));
+        holder.mVehicleTypeTextView.setText(transaction.getTypeOfVehicle());
+        holder.mTransactionRatingBar.setRating(transaction.getRating());
 
         holder.mTransactionLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnClickTransactionListener.OnTransactionSelected(mTransaction);
+//                Toast.makeText(mContext, ""+ position, Toast.LENGTH_SHORT).show();
+                mOnClickTransactionListener.OnTransactionSelected(transaction);
             }
         });
 
@@ -80,6 +82,11 @@ public class TransactionsRecyclerViewAdapter extends RecyclerView.Adapter<Transa
     @Override
     public int getItemCount() {
         return mTransactionList != null ? mTransactionList.size() : 0;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return super.getItemViewType(position);
     }
 
     public class TransactionsViewHolder extends RecyclerView.ViewHolder {

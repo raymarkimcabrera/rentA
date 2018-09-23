@@ -32,12 +32,9 @@ public class Car implements Serializable {
     String driverChoice;
 
     @Expose
-    @SerializedName("lowPrice")
-    double lowPrice;
+    @SerializedName("price")
+    double price;
 
-    @Expose
-    @SerializedName("highPrice")
-    double highPrice;
 
     public String getDriverID() {
         return driverID;
@@ -71,20 +68,12 @@ public class Car implements Serializable {
         this.driverChoice = driverChoice;
     }
 
-    public double getLowPrice() {
-        return lowPrice;
+    public double getPrice() {
+        return price;
     }
 
-    public void setLowPrice(double lowPrice) {
-        this.lowPrice = lowPrice;
-    }
-
-    public double getHighPrice() {
-        return highPrice;
-    }
-
-    public void setHighPrice(double highPrice) {
-        this.highPrice = highPrice;
+    public void setPrice(double price) {
+        this.price = price;
     }
 
     public String getImageUrl() {

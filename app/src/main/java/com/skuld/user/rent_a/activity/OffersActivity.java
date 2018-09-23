@@ -90,7 +90,7 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
             @Override
             public void onCarSelected(Car car) {
                 mTransaction.setCarID(car.getId());
-                startActivity(OfferDetailsActivity.newIntent(mContext,mTransaction));
+                startActivity(OfferDetailsActivity.newIntent(mContext,mTransaction, car));
             }
         }, mTransactionList);
 
@@ -127,4 +127,16 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
     public void onGetTransactionViewError() {
 
     }
+
+    @Override
+    public void onTransactionStatusUpdateSuccess() {
+
+    }
+
+    @Override
+    public void onTransactionStatusUpdateError() {
+
+    }
+
+
 }

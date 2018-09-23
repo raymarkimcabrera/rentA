@@ -90,4 +90,43 @@ public class TransactionPresenter extends BasePresenter {
             }
         });
     }
+
+    public void updateTransactionStatusById(final Transaction transaction, final String status) {
+        initFirebase();
+
+        showProgressDialog(mContext);
+
+        mFirebaseFirestore.collection("transactions").document(transaction.getId())
+                .update("status", status)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        mFirebaseFirestore.collection("payment").document(transaction.getPaymentID())
+                                .update("status", status)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        hideProgressDialog();
+                                        mTransactionView.onTransactionStatusUpdateSuccess();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        hideProgressDialog();
+                                        mTransactionView.onTransactionStatusUpdateSuccess();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressDialog();
+                        mTransactionView.onTransactionStatusUpdateError();
+                    }
+                });
+
+    }
 }

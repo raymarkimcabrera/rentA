@@ -13,6 +13,10 @@ import java.util.Date;
 public class Transaction implements Serializable {
 
     @Expose
+    @SerializedName("id")
+    private String id;
+
+    @Expose
     @SerializedName("userID")
     private String userID;
 
@@ -88,6 +92,18 @@ public class Transaction implements Serializable {
     @Expose
     @SerializedName("destinationAddress")
     private String destinationAddress;
+
+    @Expose
+    @SerializedName("status")
+    private String status;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getUserID() {
         return userID;
@@ -239,5 +255,13 @@ public class Transaction implements Serializable {
 
     public void setDestinationAddress(String destinationAddress) {
         this.destinationAddress = destinationAddress;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

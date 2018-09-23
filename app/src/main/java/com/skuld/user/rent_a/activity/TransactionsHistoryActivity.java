@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
@@ -29,7 +30,7 @@ public class TransactionsHistoryActivity extends BaseActivity implements Transac
     private TransactionPresenter mTransactionPresenter;
     private TransactionsRecyclerViewAdapter mTransactionsRecyclerViewAdapter;
 
-    public static Intent newIntent(Context context){
+    public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, TransactionsHistoryActivity.class);
         return intent;
     }
@@ -55,10 +56,15 @@ public class TransactionsHistoryActivity extends BaseActivity implements Transac
 
     @Override
     public void onGetTransactionViewSuccess(List<Transaction> transactionList) {
+//        for (Transaction transaction : transactionList){
+//            Toast.makeText(mContext, transaction.getId(), Toast.LENGTH_SHORT).show();
+//        }
         mTransactionsRecyclerViewAdapter = new TransactionsRecyclerViewAdapter(mContext, transactionList, new TransactionsRecyclerViewAdapter.OnClickTransactionListener() {
             @Override
             public void OnTransactionSelected(Transaction transaction) {
-
+//                Toast.makeText(mContext, transaction.getId(), Toast.LENGTH_SHORT).show();
+                startActivity(TransactionDetailsActivity.newIntent(mContext, transaction));
+                finish();
             }
         });
 
@@ -79,6 +85,16 @@ public class TransactionsHistoryActivity extends BaseActivity implements Transac
 
     @Override
     public void onGetTransactionViewError() {
+
+    }
+
+    @Override
+    public void onTransactionStatusUpdateSuccess() {
+
+    }
+
+    @Override
+    public void onTransactionStatusUpdateError() {
 
     }
 

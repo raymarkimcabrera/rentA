@@ -13,6 +13,7 @@ import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.adapter.OffersFragmentAdapter;
 import com.skuld.user.rent_a.fragments.ReviewsFragment;
 import com.skuld.user.rent_a.fragments.SummaryFragment;
+import com.skuld.user.rent_a.model.car.Car;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 
 import butterknife.BindView;
@@ -29,10 +30,12 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
 
     private OffersFragmentAdapter mOffersFragmentAdapter;
     private Transaction mTransaction;
+    private Car mCar;
 
-    public static Intent newIntent(Context context, Transaction transaction) {
+    public static Intent newIntent(Context context, Transaction transaction, Car car) {
         Intent intent = new Intent(context, OfferDetailsActivity.class);
         intent.putExtra(TRANSACTION, transaction);
+        intent.putExtra("CAR", car);
         return intent;
     }
 
@@ -49,6 +52,7 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
 
         if (extras != null) {
             mTransaction = (Transaction) extras.getSerializable(TRANSACTION);
+            mCar = (Car) extras.getSerializable("CAR");
         }
     }
 
@@ -58,7 +62,7 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
     }
 
     private void initializeViews() {
-        mOffersFragmentAdapter = new OffersFragmentAdapter(getSupportFragmentManager(), mTransaction);
+        mOffersFragmentAdapter = new OffersFragmentAdapter(getSupportFragmentManager(), mTransaction, mCar);
         mViewPager.setAdapter(mOffersFragmentAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }

@@ -249,6 +249,8 @@ public class RegisterActivity extends BaseActivity implements RegisterView, Goog
     public void onRegisterSuccess(DocumentReference documentReference) {
         Toast.makeText(mContext, "Registration Success", Toast.LENGTH_SHORT).show();
         LoginManager.getInstance().logOut();
+        startActivity(LoginActivity.newIntent(mContext));
+        finish();
     }
 
     @Override

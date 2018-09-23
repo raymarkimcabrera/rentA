@@ -7,15 +7,18 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.skuld.user.rent_a.fragments.ReviewsFragment;
 import com.skuld.user.rent_a.fragments.SummaryFragment;
+import com.skuld.user.rent_a.model.car.Car;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 
 public class OffersFragmentAdapter extends FragmentStatePagerAdapter {
 
     private Transaction mTransaction;
+    private Car mCar;
 
-    public OffersFragmentAdapter(FragmentManager fm, Transaction transaction) {
+    public OffersFragmentAdapter(FragmentManager fm, Transaction transaction, Car car) {
         super(fm);
         this.mTransaction = transaction;
+        this.mCar = car;
     }
 
     @Override
@@ -24,7 +27,7 @@ public class OffersFragmentAdapter extends FragmentStatePagerAdapter {
             case 0:
                 return new ReviewsFragment();
             case 1:
-                Fragment fragment = SummaryFragment.newInstance(mTransaction);
+                Fragment fragment = SummaryFragment.newInstance(mTransaction, mCar);
                 return fragment;
         }
         return null;

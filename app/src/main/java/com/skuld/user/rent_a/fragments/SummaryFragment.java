@@ -16,6 +16,7 @@ import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.activity.DashboardActivity;
+import com.skuld.user.rent_a.model.car.Car;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.presenter.SummaryPresenter;
 import com.skuld.user.rent_a.views.SummaryView;
@@ -60,15 +61,17 @@ public class SummaryFragment extends Fragment implements SummaryView {
     private Context mContext;
     private Transaction mTransaction;
     private SummaryPresenter mSummaryPresenter;
+    private Car mCar;
 
     public SummaryFragment() {
 
     }
 
-    public static SummaryFragment newInstance(Transaction transaction) {
+    public static SummaryFragment newInstance(Transaction transaction, Car car) {
         SummaryFragment fragment = new SummaryFragment();
         Bundle args = new Bundle();
         args.putSerializable(TRANSACTION, transaction);
+        args.putSerializable("CAR", car);
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,8 +79,7 @@ public class SummaryFragment extends Fragment implements SummaryView {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
+
     }
 
     @Override
@@ -98,7 +100,11 @@ public class SummaryFragment extends Fragment implements SummaryView {
     }
 
     private void getArgs() {
-        mTransaction = (Transaction) getArguments().getSerializable(TRANSACTION);
+        if (getArguments() != null) {
+            mTransaction = (Transaction) getArguments().getSerializable(TRANSACTION);
+            mCar = (Car) getArguments().getSerializable("CAR");
+        }
+
     }
 
     private void initPresenter() {
@@ -171,6 +177,6 @@ public class SummaryFragment extends Fragment implements SummaryView {
 
     @OnClick(R.id.bookNowButton)
     void onClick() {
-        mSummaryPresenter.bookTransaction(mTransaction);
+        mSummaryPresenter.bookTransaction(mTransaction, mCar);
     }
 }

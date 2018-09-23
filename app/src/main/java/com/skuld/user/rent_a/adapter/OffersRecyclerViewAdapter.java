@@ -69,7 +69,7 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
         ImageUtil.loadImageFromUrl(mContext, holder.mCarImageView, car.getImageUrl());
 
-        holder.mPriceTextView.setText(car.getLowPrice() + " - " + car.getHighPrice());
+        holder.mPriceTextView.setText(car.getPrice() + "");
 
         holder.mRatingBar.setRating(rating);
 
