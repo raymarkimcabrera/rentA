@@ -61,9 +61,9 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
         if (mTransactionList.size() > 0){
             for (Transaction transaction : mTransactionList) {
-                if (transaction.getCarID().equals(car.getId())) {
-                    rating += transaction.getRating();
-                }
+//                if (transaction.getCarID().equals(car.getId())) {
+//                    rating += transaction.getRating();
+//                }
             }
         }
 

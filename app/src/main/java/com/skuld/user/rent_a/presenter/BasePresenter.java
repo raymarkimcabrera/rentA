@@ -13,6 +13,7 @@ class BasePresenter {
         if (progressDialog == null){
             progressDialog = new ProgressDialog(context);
             progressDialog.setMessage("Please wait...");
+            progressDialog.setCancelable(false);
             progressDialog.show();
         }
     }

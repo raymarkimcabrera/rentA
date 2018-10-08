@@ -177,6 +177,6 @@ public class SummaryFragment extends Fragment implements SummaryView {
 
     @OnClick(R.id.bookNowButton)
     void onClick() {
-        mSummaryPresenter.bookTransaction(mTransaction, mCar);
+//        mSummaryPresenter.bookTransaction(mTransaction);
     }
 }

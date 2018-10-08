@@ -15,7 +15,11 @@ import android.widget.TextView;
 
 import com.skuld.user.rent_a.R;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,5 +44,18 @@ public class GeneralUtils {
         return matcher.find();
     }
 
+    public static Date getCurrentDate(){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm aaa");
+        Date currentDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+
+        try {
+            currentDate = simpleDateFormat.parse(calendar.getTime().toString());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return currentDate;
+    }
 
 }

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.utils.ModelUtil;
 import com.skuld.user.rent_a.utils.Preferences;
@@ -29,8 +30,10 @@ import com.skuld.user.rent_a.utils.Preferences;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -210,7 +213,12 @@ public class FindAVehicleDialog extends DialogFragment {
         mTransaction.setDriverSpecifications(mDriverRadioGroup.getCheckedRadioButtonId() == R.id.withDriverRadioButton ? WITH_DRIVER: WITHOUT_DRIVER);
         mTransaction.setTypeOfService(mTypeOfServiceRadioGroup.getCheckedRadioButtonId() == R.id.oneWayRadioButton ? ONE_WAY : ROUND_TRIP);
 
+        mTransaction.setOfferAccepted(new Offer());
+        List<Offer> offerList = new ArrayList<>();
+
+        mTransaction.setOfferList(offerList);
         mOnClickListener.onSubmit(mTransaction);
+        this.dismiss();
     }
 
     private void showDatePickerDialog(final TextView textView) {

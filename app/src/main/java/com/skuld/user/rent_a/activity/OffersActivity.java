@@ -89,7 +89,7 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
         mOffersRecyclerViewAdapter = new OffersRecyclerViewAdapter(mContext, carList, new OffersRecyclerViewAdapter.OnClickListener() {
             @Override
             public void onCarSelected(Car car) {
-                mTransaction.setCarID(car.getId());
+//                mTransaction.setCarID(car.getId());
                 startActivity(OfferDetailsActivity.newIntent(mContext,mTransaction, car));
             }
         }, mTransactionList);

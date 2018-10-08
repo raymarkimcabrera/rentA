@@ -18,12 +18,6 @@
             android:id="@+id/menuHistory"
             android:title="@string/history"/>
 
-
-        <item
-            android:id="@+id/menuPayment"
-            android:title="@string/payment"/>
-
-
         <item
             android:id="@+id/menuSchedule"
             android:title="@string/schedule"/>

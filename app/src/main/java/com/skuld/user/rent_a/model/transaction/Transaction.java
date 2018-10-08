@@ -5,9 +5,11 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.ServerTimestamp;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.skuld.user.rent_a.model.offer.Offer;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 public class Transaction implements Serializable {
@@ -29,12 +31,12 @@ public class Transaction implements Serializable {
     private String destinationLocationID;
 
     @Expose
-    @SerializedName("pickupLocationID")
-    private String pickupLocationID;
+    @SerializedName("offerAccepted")
+    private Offer offerAccepted;
 
     @Expose
-    @SerializedName("carID")
-    private String carID;
+    @SerializedName("pickupLocationID")
+    private String pickupLocationID;
 
     @Expose
     @SerializedName("conversationID")
@@ -78,10 +80,6 @@ public class Transaction implements Serializable {
     private String typeOfPayment;
 
     @Expose
-    @SerializedName("isAccepted")
-    private boolean isAccepted;
-
-    @Expose
     @SerializedName("remarks")
     private String remarks;
 
@@ -96,6 +94,26 @@ public class Transaction implements Serializable {
     @Expose
     @SerializedName("status")
     private String status;
+
+    @Expose
+    @SerializedName("offerList")
+    private List<Offer> offerList;
+
+    public Offer getOfferAccepted() {
+        return offerAccepted;
+    }
+
+    public void setOfferAccepted(Offer offerAccepted) {
+        this.offerAccepted = offerAccepted;
+    }
+
+    public List<Offer> getOfferList() {
+        return offerList;
+    }
+
+    public void setOfferList(List<Offer> offerList) {
+        this.offerList = offerList;
+    }
 
     public String getId() {
         return id;
@@ -127,14 +145,6 @@ public class Transaction implements Serializable {
 
     public void setPickupLocationID(String pickupLocationID) {
         this.pickupLocationID = pickupLocationID;
-    }
-
-    public String getCarID() {
-        return carID;
-    }
-
-    public void setCarID(String carID) {
-        this.carID = carID;
     }
 
     public String getConversationID() {
@@ -223,14 +233,6 @@ public class Transaction implements Serializable {
 
     public void setPaymentID(String paymentID) {
         this.paymentID = paymentID;
-    }
-
-    public boolean isAccepted() {
-        return isAccepted;
-    }
-
-    public void setAccepted(boolean accepted) {
-        isAccepted = accepted;
     }
 
     public String getTypeOfService() {

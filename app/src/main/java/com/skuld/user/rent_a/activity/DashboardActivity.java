@@ -44,7 +44,9 @@ import com.skuld.user.rent_a.dialog.FindAVehicleDialog;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.presenter.SummaryPresenter;
 import com.skuld.user.rent_a.utils.ModelUtil;
+import com.skuld.user.rent_a.views.SummaryView;
 
 import org.w3c.dom.Text;
 
@@ -56,7 +58,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener, FindAVehicleDialog.OnClickListener {
+public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener, FindAVehicleDialog.OnClickListener, SummaryView {
 
     private static final String TAG = DashboardActivity.class.getSimpleName();
 
@@ -94,6 +96,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private MapRoute mMapRoute;
     private int mYear, mMonth, mDay;
     private Transaction mTransaction;
+    private SummaryPresenter mSummaryPresenter;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
@@ -105,18 +108,6 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         super.onCreate(savedInstanceState);
 
         initialize();
-
-        mContext = this;
-
-        mTransaction = new Transaction();
-
-        initNavigationMenu();
-
-        initViews();
-
-        initializeMaps();
-
-        posManager = PositioningManager.getInstance();
     }
 
     @Override
@@ -262,6 +253,20 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
             actionBar.setTitle(R.string.app_name);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        mContext = this;
+
+        mTransaction = new Transaction();
+
+        initNavigationMenu();
+
+        initViews();
+
+        initializeMaps();
+
+        initializePresenter();
+
+        posManager = PositioningManager.getInstance();
     }
 
     private void initNavigationMenu() {
@@ -274,13 +279,13 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
                 switch (menuItem.getItemId()) {
                     case R.id.menuItemHome:
+                        startActivity(DashboardActivity.newIntent(mContext));
                         return true;
-
                     case R.id.menuMessages:
+                        startActivity(MessageListActivity.newIntent(mContext));
                         return true;
                     case R.id.menuHistory:
                         startActivity(TransactionsHistoryActivity.newIntent(mContext));
-                        finish();
                         return true;
                 }
                 mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -292,6 +297,10 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         MenuItem appVersion = menu.findItem(R.id.menuAppVersion);
         appVersion.setTitle("Version " + BuildConfig.VERSION_NAME);
 
+    }
+
+    private void initializePresenter(){
+        mSummaryPresenter = new SummaryPresenter(mContext, this);
     }
 
     private void initializeMaps() {
@@ -378,6 +387,15 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private void initViews() {
         registerEditTextToShowAutoComplete(mPickUpeditText, false);
         registerEditTextToShowAutoComplete(mDestinationEditText, false);
+
+        mFindVehicleButton.setBackground(getDrawable(R.drawable.button_disabled_round_corner));
+        mFindVehicleButton.setTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+        mFindVehicleButton.setEnabled(false);
+
+        mPickUpGeoCoordinate = null;
+        mDestinationGeoCoordinate = null;
+        mPickUpeditText.setText("");
+        mDestinationEditText.setText("");
     }
 
     public void registerEditTextToShowAutoComplete(final TextView textView, final boolean removeFocusAfter) {
@@ -423,7 +441,19 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     @Override
     public void onSubmit(Transaction transaction) {
-        startActivity(OffersActivity.newIntent(mContext, transaction));
+        mSummaryPresenter.bookTransaction(transaction);
+//        startActivity(OffersActivity.newIntent(mContext, transaction));
+    }
+
+    @Override
+    public void onBookingSuccess() {
+        Toast.makeText(mContext, "Booking success", Toast.LENGTH_SHORT).show();
+        initialize();
+    }
+
+    @Override
+    public void onBookingError() {
+        Toast.makeText(mContext, "Booking failed", Toast.LENGTH_SHORT).show();
     }
 }
 

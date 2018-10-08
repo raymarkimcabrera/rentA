@@ -32,7 +32,7 @@ public class TransactionPresenter extends BasePresenter {
 
         showProgressDialog(mContext);
 
-        Query getTransactionQuery = mFirebaseFirestore.collection("transactions");
+        Query getTransactionQuery = mFirebaseFirestore.collection("transaction");
 
         getTransactionQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -65,7 +65,7 @@ public class TransactionPresenter extends BasePresenter {
 
         showProgressDialog(mContext);
 
-        Query getTransactionQuery = mFirebaseFirestore.collection("transactions").whereEqualTo("userID", userID);
+        Query getTransactionQuery = mFirebaseFirestore.collection("transaction").whereEqualTo("userID", userID);
 
         getTransactionQuery.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -96,7 +96,7 @@ public class TransactionPresenter extends BasePresenter {
 
         showProgressDialog(mContext);
 
-        mFirebaseFirestore.collection("transactions").document(transaction.getId())
+        mFirebaseFirestore.collection("transaction").document(transaction.getId())
                 .update("status", status)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
