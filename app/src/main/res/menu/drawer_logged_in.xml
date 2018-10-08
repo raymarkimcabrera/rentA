@@ -26,9 +26,7 @@
             android:id="@+id/menuNotifications"
             android:title="@string/notifications"/>
 
-        <item
-            android:id="@+id/menuDriveWithRentA"
-            android:title="@string/drive_with_rent_a"/>
+
         <item
             android:id="@+id/menuSettings"
             android:title="@string/settings"/>
