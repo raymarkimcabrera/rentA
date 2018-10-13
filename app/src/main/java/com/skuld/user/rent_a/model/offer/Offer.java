@@ -17,9 +17,13 @@ public class Offer implements Serializable {
 
     @Expose
     @SerializedName("price")
-    private Double price;
+    private int price;
 
-    public void setPrice(Double price) {
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
         this.price = price;
     }
 
