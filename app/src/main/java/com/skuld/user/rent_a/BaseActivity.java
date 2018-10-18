@@ -29,7 +29,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 
-public abstract class BaseActivity extends AppCompatActivity{
+public abstract class BaseActivity extends AppCompatActivity{ 
 
     public final static String ALL_OUT = "ALL_OUT";
     public final static String SEPERATE_PAYMENTS = "SEPERATE_PAYMENTS";
