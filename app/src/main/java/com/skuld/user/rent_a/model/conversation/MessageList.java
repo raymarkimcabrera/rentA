@@ -33,7 +33,10 @@ public class MessageList implements Serializable{
     }
 
     public Message getLastMessage(){
-        int size = thread.size();
-        return thread.get(size);
+        if (thread.size() > 0){
+            int size = thread.size();
+            return thread.get(size);
+        }
+        return null;
     }
 }

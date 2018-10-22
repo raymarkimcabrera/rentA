@@ -50,6 +50,13 @@ public class LocationSelectorMapPresenter extends BasePresenter {
             @Override
             public void onFailure(Call<ReverseGeocoderResponse> call, Throwable t) {
                 hideProgressDialog();
+                Exception exception = new Exception(t);
+
+                if (exception instanceof java.net.UnknownHostException) {
+                    mReverseGeoCoderView.onReverseGeoCoderCallError("Error connecting to HERE maps server..");
+                } else {
+                    mReverseGeoCoderView.onReverseGeoCoderCallError("Error connecting to server. Please try again.");
+                }
             }
         });
 

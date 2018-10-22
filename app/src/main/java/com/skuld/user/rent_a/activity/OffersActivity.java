@@ -1,8 +1,10 @@
 package com.skuld.user.rent_a.activity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Parcelable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +16,7 @@ import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.adapter.OffersRecyclerViewAdapter;
 import com.skuld.user.rent_a.model.car.Car;
+import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.presenter.OffersPresenter;
 import com.skuld.user.rent_a.presenter.TransactionPresenter;
@@ -36,8 +39,8 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
     @BindView(R.id.offersRecyclerView)
     RecyclerView mOfferRecyclerView;
 
-    private List<Car> mCarList;
     private List<Transaction> mTransactionList;
+    private List<Offer> mOffersList;
     private OffersRecyclerViewAdapter mOffersRecyclerViewAdapter;
     private Car mCar;
 
@@ -60,10 +63,11 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
         initPresenter();
 
         getArgs();
+        initialize();
 //        mCarList = new ArrayList<>();
-        mTransactionList = new ArrayList<>();
+//        mTransactionList = new ArrayList<>();
 
-        mTransactionPresenter.getTransactions();
+//        mTransactionPresenter.getTransactions();
     }
 
     private void getArgs() {
@@ -72,6 +76,41 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
         if (extras != null) {
             mTransaction = (Transaction) extras.getSerializable(TRANSACTION);
         }
+    }
+
+    private void initialize() {
+        mOffersList = new ArrayList<>(mTransaction.getOfferList());
+        mOffersRecyclerViewAdapter = new OffersRecyclerViewAdapter(mContext, mOffersList, new OffersRecyclerViewAdapter.OnClickListener() {
+            @Override
+            public void onOfferSelected(final Offer offer) {
+//                mTransaction.setCarID(car.getId());
+//                startActivity(OfferDetailsActivity.newIntent(mContext, mTransaction, car));
+                AlertDialog alertDialog = new AlertDialog.Builder(mContext)
+                        .setTitle("Select Offer")
+                        .setMessage("Do you accept this offer?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mTransactionPresenter.acceptOffer(mTransaction, offer);
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).create();
+                alertDialog.show();
+            }
+        });
+
+        mOfferRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(mContext);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mOfferRecyclerView.setLayoutManager(llm);
+        mOfferRecyclerView.setAdapter(mOffersRecyclerViewAdapter);
+        mOffersRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -86,20 +125,20 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
     @Override
     public void onGetOffersSuccess(List<Car> carList) {
-        mOffersRecyclerViewAdapter = new OffersRecyclerViewAdapter(mContext, carList, new OffersRecyclerViewAdapter.OnClickListener() {
-            @Override
-            public void onCarSelected(Car car) {
-//                mTransaction.setCarID(car.getId());
-                startActivity(OfferDetailsActivity.newIntent(mContext,mTransaction, car));
-            }
-        }, mTransactionList);
-
-        mOfferRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(mContext);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        mOfferRecyclerView.setLayoutManager(llm);
-        mOfferRecyclerView.setAdapter(mOffersRecyclerViewAdapter);
-        mOffersRecyclerViewAdapter.notifyDataSetChanged();
+//        mOffersRecyclerViewAdapter = new OffersRecyclerViewAdapter(mContext, mOffersList, new OffersRecyclerViewAdapter.OnClickListener() {
+//            @Override
+//            public void onCarSelected(Car car) {
+////                mTransaction.setCarID(car.getId());
+//                startActivity(OfferDetailsActivity.newIntent(mContext, mTransaction, car));
+//            }
+//        });
+//
+//        mOfferRecyclerView.setHasFixedSize(true);
+//        LinearLayoutManager llm = new LinearLayoutManager(mContext);
+//        llm.setOrientation(LinearLayoutManager.VERTICAL);
+//        mOfferRecyclerView.setLayoutManager(llm);
+//        mOfferRecyclerView.setAdapter(mOffersRecyclerViewAdapter);
+//        mOffersRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     @Override

@@ -8,6 +8,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.skuld.user.rent_a.model.car.Car;
+import com.skuld.user.rent_a.model.conversation.Message;
+import com.skuld.user.rent_a.model.conversation.MessageList;
+import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.views.TransactionView;
 
@@ -116,6 +120,106 @@ public class TransactionPresenter extends BasePresenter {
                                     public void onFailure(@NonNull Exception e) {
                                         hideProgressDialog();
                                         mTransactionView.onTransactionStatusUpdateSuccess();
+                                    }
+                                });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressDialog();
+                        mTransactionView.onTransactionStatusUpdateError();
+                    }
+                });
+
+    }
+
+    public void acceptOffer(final Transaction transaction, Offer offer) {
+
+        initFirebase();
+        showProgressDialog(mContext);
+        // Remove offers that is not accepted
+        List<Offer> emptyOffers = new ArrayList<>();
+        final Car car = offer.getCar();
+
+        car.setTransactionID(transaction.getId());
+
+        offer.setCar(car);
+
+        transaction.setOfferAccepted(offer);
+        transaction.setOfferList(emptyOffers);
+        mFirebaseFirestore.collection("messages").document()
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        MessageList messageList = new MessageList();
+                        List<Message> messages = new ArrayList<>();
+
+                        messageList.setId(documentSnapshot.getId());
+                        messageList.setThread(messages);
+                        transaction.setConversationID(documentSnapshot.getId());
+
+                        mFirebaseFirestore.collection("messages")
+                                .document(messageList.getId())
+                                .set(messageList)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        mFirebaseFirestore.collection("transaction").document(transaction.getId())
+                                                .set(transaction)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+
+                                                        mFirebaseFirestore.collection("payment").document(transaction.getPaymentID())
+                                                                .update("status", "PENDING")
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+
+                                                                        mFirebaseFirestore.collection("car").document(car.getId())
+                                                                                .set(car)
+                                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onSuccess(Void aVoid) {
+                                                                                        hideProgressDialog();
+                                                                                        mTransactionView.onTransactionStatusUpdateSuccess();
+                                                                                    }
+                                                                                })
+                                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                                    @Override
+                                                                                    public void onFailure(@NonNull Exception e) {
+                                                                                        hideProgressDialog();
+                                                                                        mTransactionView.onTransactionStatusUpdateError();
+                                                                                    }
+                                                                                });
+                                                                    }
+                                                                })
+                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                    @Override
+                                                                    public void onFailure(@NonNull Exception e) {
+                                                                        hideProgressDialog();
+                                                                        mTransactionView.onTransactionStatusUpdateError();
+                                                                    }
+                                                                });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        hideProgressDialog();
+                                                        mTransactionView.onTransactionStatusUpdateError();
+                                                    }
+                                                });
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        hideProgressDialog();
+                                        mTransactionView.onTransactionStatusUpdateError();
                                     }
                                 });
                     }

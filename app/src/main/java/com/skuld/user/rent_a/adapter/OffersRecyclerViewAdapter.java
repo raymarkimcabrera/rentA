@@ -15,7 +15,9 @@ import android.widget.TextView;
 
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.car.Car;
+import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.utils.GeneralUtils;
 import com.skuld.user.rent_a.utils.ImageUtil;
 import com.skuld.user.rent_a.utils.ModelUtil;
 
@@ -29,20 +31,18 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
 
     private Context mContext;
-    private List<Car> mCarList;
+    private List<Offer> mOffersList;
     private OnClickListener mOnClickListener;
-    private List<Transaction> mTransactionList;
 
     public interface OnClickListener {
 
-        void onCarSelected(Car car);
+        void onOfferSelected(Offer offer);
     }
 
-    public OffersRecyclerViewAdapter(Context context, List<Car> carList, OnClickListener onClickListener, List<Transaction> transactionList) {
+    public OffersRecyclerViewAdapter(Context context, List<Offer> offerList, OnClickListener onClickListener) {
         this.mContext = context;
-        this.mCarList = carList;
+        this.mOffersList = offerList;
         this.mOnClickListener = onClickListener;
-        this.mTransactionList = transactionList;
     }
 
     @NonNull
@@ -56,34 +56,24 @@ public class OffersRecyclerViewAdapter extends RecyclerView.Adapter<OffersRecycl
 
     @Override
     public void onBindViewHolder(@NonNull OffersRecyclerViewAdapter.OffersRecyclerViewHolder holder, int position) {
-        final Car car = mCarList.get(position);
-        float rating = 0;
-
-        if (mTransactionList.size() > 0){
-            for (Transaction transaction : mTransactionList) {
-//                if (transaction.getCarID().equals(car.getId())) {
-//                    rating += transaction.getRating();
-//                }
-            }
-        }
-
+        final Offer offer = mOffersList.get(position);
+        final Car car = offer.getCar();
         ImageUtil.loadImageFromUrl(mContext, holder.mCarImageView, car.getImageUrl());
 
-        holder.mPriceTextView.setText(car.getPrice() + "");
+        holder.mPriceTextView.setText(offer.getPrice() + "");
 
-        holder.mRatingBar.setRating(rating);
 
         holder.mOfferCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnClickListener.onCarSelected(car);
+                mOnClickListener.onOfferSelected(offer);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mCarList.size();
+        return mOffersList.size();
     }
 
     public class OffersRecyclerViewHolder extends RecyclerView.ViewHolder {

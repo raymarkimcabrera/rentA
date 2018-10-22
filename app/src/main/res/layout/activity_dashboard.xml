@@ -42,14 +42,14 @@
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="25dp"
                     android:text="Pick-up point"
                     android:layout_weight="1"/>
 
                 <TextView
                     android:id="@+id/pickUpTextView"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="25dp"
                     android:background="@android:color/transparent"
                     android:layout_weight="2"
                     android:singleLine="true"
@@ -78,14 +78,14 @@
 
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="25dp"
                     android:layout_weight="1"
                     android:text="Destination"/>
 
                 <TextView
                     android:id="@+id/destinationTextView"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="25dp"
                     android:layout_weight="2"
                     android:background="@android:color/transparent"
                     android:singleLine="true"

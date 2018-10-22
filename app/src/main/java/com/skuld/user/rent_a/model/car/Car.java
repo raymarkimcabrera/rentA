@@ -23,7 +23,29 @@ public class Car implements Serializable {
     @SerializedName("imageUrl")
     String imageUrl;
 
+    @Expose
+    @SerializedName("transactionID")
+    String transactionID;
 
+    @Expose
+    @SerializedName("plateNumber")
+    String plateNumber;
+
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
+    public String getTransactionID() {
+        return transactionID;
+    }
+
+    public void setTransactionID(String transactionID) {
+        this.transactionID = transactionID;
+    }
 
     public String getDriverID() {
         return driverID;

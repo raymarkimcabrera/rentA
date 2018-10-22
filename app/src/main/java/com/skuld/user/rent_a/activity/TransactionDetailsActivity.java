@@ -3,9 +3,13 @@ package com.skuld.user.rent_a.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +29,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 
 public class TransactionDetailsActivity extends BaseActivity implements TransactionView, PaymentView {
+    private static final String TAG = TransactionDetailsActivity.class.getSimpleName();
 
     @BindView(R.id.pickUpTextView)
     TextView mPickUpTextView;
@@ -69,9 +74,12 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         super.onCreate(savedInstanceState);
 
         mContext = this;
+
         getArgs();
+        initToolbar();
 
         initializePresenter();
+        Log.e(TAG, "onCreate: " + mTransaction.getPaymentID() );
         mPaymentPresenter.getPaymentByID(mTransaction.getPaymentID());
     }
 
@@ -80,6 +88,27 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         super.onBackPressed();
         startActivity(TransactionsHistoryActivity.newIntent(mContext));
         finish();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_transaction_details, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                startActivity(TransactionsHistoryActivity.newIntent(mContext));
+                finish();
+                return true;
+            case R.id.viewOffers:
+                Intent intent = OffersActivity.newIntent(mContext, mTransaction);
+                startActivity(intent);
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -126,7 +155,15 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
 
     private void getArgs() {
         mTransaction = (Transaction) getIntent().getSerializableExtra("TRANSACTION");
-        Toast.makeText(mContext, mTransaction.getId(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mContext, mTransaction.getId(), Toast.LENGTH_SHORT).show();
+    }
+
+    private void initToolbar() {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("Transaction details");
+        }
     }
 
     private void initialize() {
@@ -141,6 +178,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         mSerialCodeTextView.setText(mTransaction.getId());
         mPickUpDateTextView.setText(simpleDateFormat.format(mTransaction.getStartDate()));
         mDestinationDateTextView.setText(simpleDateFormat.format(mTransaction.getEndDate()));
+        Log.e(TAG, "initialize: " + mPayment );
         mCostTextView.setText(String.valueOf(mPayment.getTotalAmount()));
     }
 

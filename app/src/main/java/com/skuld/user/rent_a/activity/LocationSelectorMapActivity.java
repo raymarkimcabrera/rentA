@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
@@ -108,6 +109,11 @@ public class LocationSelectorMapActivity extends BaseActivity implements OnEngin
         mApiInterface = getLocationDetailsByIDAPI();
         mLocationSelecctorMapPresenter = new LocationSelectorMapPresenter(mContext, mApiInterface, (LocationDetailsView) this);
         mLocationSelecctorMapPresenter.getLocationDetailsByID(locations.getLocationId());
+    }
+
+    @Override
+    public void onReverseGeoCoderCallError(String message) {
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

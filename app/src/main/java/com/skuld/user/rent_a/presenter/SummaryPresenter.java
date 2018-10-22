@@ -2,11 +2,14 @@ package com.skuld.user.rent_a.presenter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.skuld.user.rent_a.model.car.Car;
 import com.skuld.user.rent_a.model.conversation.Message;
@@ -23,6 +26,8 @@ import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 public class SummaryPresenter extends BasePresenter {
 
@@ -52,21 +57,54 @@ public class SummaryPresenter extends BasePresenter {
 
                         DocumentReference newTransaction = mFirebaseFirestore.collection("transaction").document();
                         transaction.setId(newTransaction.getId());
-                        mFirebaseFirestore.collection("transaction").document(transaction.getId())
-                                .set(transaction)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+
+                        mFirebaseFirestore.collection("payment")
+                                .document()
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
-                                    public void onSuccess(Void aVoid) {
-                                        hideProgressDialog();
-                                        mSummaryView.onBookingSuccess();
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        transaction.setPaymentID(documentSnapshot.getId());
+                                        Payment payment = new Payment();
+                                        mFirebaseFirestore.collection("payment")
+                                                .document(transaction.getPaymentID())
+                                                .set(payment)
+                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                    @Override
+                                                    public void onSuccess(Void aVoid) {
+                                                        mFirebaseFirestore.collection("transaction").document(transaction.getId())
+                                                                .set(transaction)
+                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                    @Override
+                                                                    public void onSuccess(Void aVoid) {
+                                                                        hideProgressDialog();
+                                                                        mSummaryView.onBookingSuccess();
+                                                                    }
+                                                                }).addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
+                                                                hideProgressDialog();
+                                                                mSummaryView.onBookingError();
+                                                            }
+                                                        });
+                                                    }
+                                                })
+                                                .addOnFailureListener(new OnFailureListener() {
+                                                    @Override
+                                                    public void onFailure(@NonNull Exception e) {
+                                                        hideProgressDialog();
+                                                        mSummaryView.onBookingError();
+                                                    }
+                                                });
                                     }
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                hideProgressDialog();
-                                mSummaryView.onBookingError();
-                            }
-                        });
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        hideProgressDialog();
+                                        mSummaryView.onBookingError();
+                                    }
+                                });
 
                     }
 
@@ -74,7 +112,8 @@ public class SummaryPresenter extends BasePresenter {
                 }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
+                hideProgressDialog();
+                mSummaryView.onBookingError();
             }
         });
     }

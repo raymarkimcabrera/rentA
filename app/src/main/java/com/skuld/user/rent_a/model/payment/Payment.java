@@ -28,7 +28,7 @@ public class Payment implements Serializable {
     }
 
     public double getTotalAmount() {
-        return totalAmount;
+        return totalAmount < 0 ? 0.00 : totalAmount;
     }
 
     public void setTotalAmount(double totalAmount) {
