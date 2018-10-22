@@ -188,7 +188,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                         mMap.removeMapObject(mDestinationMarker);
 
                     mDestinationLocations = locations;
-                    mTransaction.setDestinationLocationID(locations.getLocationId());
+                    mTransaction.setDestinationLocation(locations.getDisplayPosition());
                     mTransaction.setDestinationAddress(locations.getAddress().getFullAddress());
                     DisplayPosition destinationDisplayPosition = mDestinationLocations.getDisplayPosition();
                     mDestinationGeoCoordinate = new GeoCoordinate(destinationDisplayPosition.getLatitude(), destinationDisplayPosition.getLongitude());
@@ -201,7 +201,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                         mMap.removeMapObject(mPickUpMarker);
 
                     mPickUpLocations = locations;
-                    mTransaction.setPickupLocationID(locations.getLocationId());
+                    mTransaction.setPickupLocation(locations.getDisplayPosition());
                     mTransaction.setPickUpAddress(locations.getAddress().getFullAddress());
                     DisplayPosition pickUpLocationDisplayPosition = mPickUpLocations.getDisplayPosition();
                     mPickUpGeoCoordinate = new GeoCoordinate(pickUpLocationDisplayPosition.getLatitude(), pickUpLocationDisplayPosition.getLongitude());

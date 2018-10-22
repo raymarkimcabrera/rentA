@@ -6,6 +6,7 @@ import com.google.firebase.firestore.ServerTimestamp;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.skuld.user.rent_a.model.offer.Offer;
+import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -27,16 +28,16 @@ public class Transaction implements Serializable {
     private String paymentID;
 
     @Expose
-    @SerializedName("destinationLocationID")
-    private String destinationLocationID;
+    @SerializedName("destinationLocation")
+    private DisplayPosition destinationLocation;
 
     @Expose
     @SerializedName("offerAccepted")
     private Offer offerAccepted;
 
     @Expose
-    @SerializedName("pickupLocationID")
-    private String pickupLocationID;
+    @SerializedName("pickupLocation")
+    private DisplayPosition pickupLocation;
 
     @Expose
     @SerializedName("conversationID")
@@ -131,20 +132,20 @@ public class Transaction implements Serializable {
         this.userID = userID;
     }
 
-    public String getDestinationLocationID() {
-        return destinationLocationID;
+    public DisplayPosition getDestinationLocation() {
+        return destinationLocation;
     }
 
-    public void setDestinationLocationID(String destinationLocationID) {
-        this.destinationLocationID = destinationLocationID;
+    public void setDestinationLocation(DisplayPosition destinationLocation) {
+        this.destinationLocation = destinationLocation;
     }
 
-    public String getPickupLocationID() {
-        return pickupLocationID;
+    public DisplayPosition getPickupLocation() {
+        return pickupLocation;
     }
 
-    public void setPickupLocationID(String pickupLocationID) {
-        this.pickupLocationID = pickupLocationID;
+    public void setPickupLocation(DisplayPosition pickupLocation) {
+        this.pickupLocation = pickupLocation;
     }
 
     public String getConversationID() {
