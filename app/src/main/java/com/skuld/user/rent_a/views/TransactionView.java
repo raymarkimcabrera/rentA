@@ -12,7 +12,7 @@ public interface TransactionView {
 
     void onGetTransactionViewError();
 
-    void onTransactionStatusUpdateSuccess();
+    void onTransactionStatusUpdateSuccess(Transaction transaction);
 
     void onTransactionStatusUpdateError();
 }

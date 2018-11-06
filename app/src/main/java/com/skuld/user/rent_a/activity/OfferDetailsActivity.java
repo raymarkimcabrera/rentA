@@ -14,11 +14,16 @@ import com.skuld.user.rent_a.adapter.OffersFragmentAdapter;
 import com.skuld.user.rent_a.fragments.ReviewsFragment;
 import com.skuld.user.rent_a.fragments.SummaryFragment;
 import com.skuld.user.rent_a.model.car.Car;
+import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.presenter.OffersPresenter;
+import com.skuld.user.rent_a.views.OffersView;
+
+import java.util.List;
 
 import butterknife.BindView;
 
-public class OfferDetailsActivity extends BaseActivity implements ReviewsFragment.OnFragmentInteractionListener, SummaryFragment.OnFragmentInteractionListener{
+public class OfferDetailsActivity extends BaseActivity implements ReviewsFragment.OnFragmentInteractionListener, SummaryFragment.OnFragmentInteractionListener, OffersView {
     private static final String TAG = OfferDetailsActivity.class.getSimpleName();
     private static final String TRANSACTION = "TRANSACTION";
 
@@ -30,12 +35,13 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
 
     private OffersFragmentAdapter mOffersFragmentAdapter;
     private Transaction mTransaction;
-    private Car mCar;
+    private Offer mOffer;
+    private OffersPresenter mOffersPresenter;
 
-    public static Intent newIntent(Context context, Transaction transaction, Car car) {
+    public static Intent newIntent(Context context, Transaction transaction, Offer offer) {
         Intent intent = new Intent(context, OfferDetailsActivity.class);
         intent.putExtra(TRANSACTION, transaction);
-        intent.putExtra("CAR", car);
+        intent.putExtra("OFFER", offer);
         return intent;
     }
 
@@ -43,8 +49,9 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mOffersPresenter = new OffersPresenter(mContext, this);
         getArgs();
-        initializeViews();
+        mOffersPresenter.getReviews(mOffer.getCar());
     }
 
     private void getArgs() {
@@ -52,7 +59,7 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
 
         if (extras != null) {
             mTransaction = (Transaction) extras.getSerializable(TRANSACTION);
-            mCar = (Car) extras.getSerializable("CAR");
+            mOffer = (Offer) extras.getSerializable("OFFER");
         }
     }
 
@@ -61,14 +68,35 @@ public class OfferDetailsActivity extends BaseActivity implements ReviewsFragmen
         return R.layout.activity_offer_details;
     }
 
-    private void initializeViews() {
-        mOffersFragmentAdapter = new OffersFragmentAdapter(getSupportFragmentManager(), mTransaction, mCar);
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onGetOffersSuccess(List<Car> carList) {
+
+    }
+
+    @Override
+    public void onNoOffers() {
+
+    }
+
+    @Override
+    public void onGetOffersError() {
+
+    }
+
+    @Override
+    public void onGetReviewsSuccess(List<Transaction> transactions) {
+        mOffersFragmentAdapter = new OffersFragmentAdapter(getSupportFragmentManager(), mTransaction, mOffer, transactions);
         mViewPager.setAdapter(mOffersFragmentAdapter);
         mTabLayout.setupWithViewPager(mViewPager);
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onGetReviewsError() {
 
     }
 }

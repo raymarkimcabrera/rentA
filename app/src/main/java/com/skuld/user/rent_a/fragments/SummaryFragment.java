@@ -16,10 +16,17 @@ import com.applandeo.materialcalendarview.EventDay;
 import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.activity.DashboardActivity;
+import com.skuld.user.rent_a.activity.TransactionDetailsActivity;
 import com.skuld.user.rent_a.model.car.Car;
+import com.skuld.user.rent_a.model.driver.Driver;
+import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.presenter.DriverPresenter;
 import com.skuld.user.rent_a.presenter.SummaryPresenter;
+import com.skuld.user.rent_a.presenter.TransactionPresenter;
+import com.skuld.user.rent_a.views.DriverView;
 import com.skuld.user.rent_a.views.SummaryView;
+import com.skuld.user.rent_a.views.TransactionView;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -35,7 +42,7 @@ import static com.skuld.user.rent_a.BaseActivity.ONE_WAY;
 import static com.skuld.user.rent_a.BaseActivity.WITH_DRIVER;
 import static com.skuld.user.rent_a.adapter.OffersRecyclerViewAdapter.TAG;
 
-public class SummaryFragment extends Fragment implements SummaryView {
+public class SummaryFragment extends Fragment implements TransactionView, DriverView {
     private static final String TRANSACTION = "TRANSACTION";
 
 
@@ -57,21 +64,31 @@ public class SummaryFragment extends Fragment implements SummaryView {
     @BindView(R.id.withDriverTextView)
     TextView mWithDriverTextView;
 
+    @BindView(R.id.ownerTextView)
+    TextView mOwnerTextView;
+
+    @BindView(R.id.carModelTextView)
+    TextView mCarModelTextView;
+
+    @BindView(R.id.plateNumberTextView)
+    TextView mPlateNumberTextView;
+
     private OnFragmentInteractionListener mListener;
     private Context mContext;
     private Transaction mTransaction;
-    private SummaryPresenter mSummaryPresenter;
-    private Car mCar;
+    private TransactionPresenter mTransactionPresenter;
+    private DriverPresenter mDriverPresenter;
+    private Offer mOffer;
 
     public SummaryFragment() {
 
     }
 
-    public static SummaryFragment newInstance(Transaction transaction, Car car) {
+    public static SummaryFragment newInstance(Transaction transaction, Offer offer) {
         SummaryFragment fragment = new SummaryFragment();
         Bundle args = new Bundle();
         args.putSerializable(TRANSACTION, transaction);
-        args.putSerializable("CAR", car);
+        args.putSerializable("OFFER", offer);
         fragment.setArguments(args);
         return fragment;
     }
@@ -102,13 +119,14 @@ public class SummaryFragment extends Fragment implements SummaryView {
     private void getArgs() {
         if (getArguments() != null) {
             mTransaction = (Transaction) getArguments().getSerializable(TRANSACTION);
-            mCar = (Car) getArguments().getSerializable("CAR");
+            mOffer = (Offer) getArguments().getSerializable("OFFER");
         }
 
     }
 
     private void initPresenter() {
-        mSummaryPresenter = new SummaryPresenter(mContext, this);
+        mTransactionPresenter = new TransactionPresenter(mContext, this);
+        mDriverPresenter = new DriverPresenter(mContext, this);
     }
 
     private void initUi() {
@@ -117,6 +135,7 @@ public class SummaryFragment extends Fragment implements SummaryView {
         mPassengersTextView.setText(String.valueOf(mTransaction.getPassengers()));
         mTypeOfPaymentTextView.setText(mTransaction.getTypeOfPayment().equals(ALL_OUT) ? "All Out" : "Separate Payments");
         mWithDriverTextView.setText(mTransaction.getDriverSpecifications().equals(WITH_DRIVER) ? "With Driver" : "Without Driver");
+
 
         Calendar startCalendar = Calendar.getInstance();
         Calendar endCalendar = Calendar.getInstance();
@@ -161,13 +180,40 @@ public class SummaryFragment extends Fragment implements SummaryView {
     }
 
     @Override
-    public void onBookingSuccess() {
-        startActivity(DashboardActivity.newIntent(mContext));
+    public void onGetTransactionViewSuccess(List<Transaction> transactionList) {
+
     }
 
     @Override
-    public void onBookingError() {
-        Toast.makeText(mContext, "Booking Failed", Toast.LENGTH_SHORT).show();
+    public void onNoTransaction() {
+
+    }
+
+    @Override
+    public void onGetTransactionViewError() {
+
+    }
+
+    @Override
+    public void onTransactionStatusUpdateSuccess(Transaction transaction) {
+        startActivity(TransactionDetailsActivity.newIntent(mContext, transaction));
+    }
+
+    @Override
+    public void onTransactionStatusUpdateError() {
+        Toast.makeText(mContext, "Cannot process transaction. Please try again.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+        mOwnerTextView.setText(driver.getFirstName() +" "+ driver.getLastName());
+        mCarModelTextView.setText(mOffer.getCar().getCarModel());
+        mPlateNumberTextView.setText(mOffer.getCar().getPlateNumber());
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
+
     }
 
     public interface OnFragmentInteractionListener {
@@ -177,6 +223,7 @@ public class SummaryFragment extends Fragment implements SummaryView {
 
     @OnClick(R.id.bookNowButton)
     void onClick() {
+        mTransactionPresenter.acceptOffer(mTransaction, mOffer);
 //        mSummaryPresenter.bookTransaction(mTransaction);
     }
 }

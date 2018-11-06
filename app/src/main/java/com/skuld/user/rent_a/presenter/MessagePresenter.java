@@ -48,13 +48,13 @@ public class MessagePresenter extends BasePresenter {
                         Transaction transaction = documentSnapshot.toObject(Transaction.class);
 
                         initFirebase();
-//                        Log.i("MESSAGE_ID", transaction.getConversationID());
+                        Log.e("MESSAGE_ID", transaction.getConversationID());
                         mFirebaseFirestore.collection("messages").document(transaction.getConversationID()).get()
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         MessageList message = documentSnapshot.toObject(MessageList.class);
-                                        Log.i("TASK_MESSAGE_LIST",message.getId());
+                                        Log.e("TASK_MESSAGE_LIST",message.getId());
 
                                         messageListView.onGetConversationSuccess(message);
                                     }
@@ -68,7 +68,7 @@ public class MessagePresenter extends BasePresenter {
                                     }
                                 });
                         if (messageList.size() > 0){
-//                            Log.i("Message_List", messageList.size() + "");
+                            Log.e("Message_List", messageList.size() + "");
                         }
                     }
 
@@ -77,6 +77,9 @@ public class MessagePresenter extends BasePresenter {
 //                    for (MessageList thread : messageList) {
 //                        Log.i("Message_List", thread.getId());
 //                    }
+                } else {
+                    hideProgressDialog();
+                    messageListView.onNoConversation();
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

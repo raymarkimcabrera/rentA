@@ -3,6 +3,7 @@ package com.skuld.user.rent_a.activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.Image;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -10,15 +11,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.payment.Payment;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.presenter.DriverPresenter;
 import com.skuld.user.rent_a.presenter.PaymentPresenter;
 import com.skuld.user.rent_a.presenter.TransactionPresenter;
+import com.skuld.user.rent_a.views.DriverView;
 import com.skuld.user.rent_a.views.PaymentView;
 import com.skuld.user.rent_a.views.TransactionView;
 
@@ -28,7 +33,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class TransactionDetailsActivity extends BaseActivity implements TransactionView, PaymentView {
+public class TransactionDetailsActivity extends BaseActivity implements TransactionView, PaymentView, DriverView {
     private static final String TAG = TransactionDetailsActivity.class.getSimpleName();
 
     @BindView(R.id.pickUpTextView)
@@ -58,10 +63,26 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
     @BindView(R.id.serialCodeTextView)
     TextView mSerialCodeTextView;
 
+    @BindView(R.id.ownerTextView)
+    TextView mOwnerTextView;
+
+    @BindView(R.id.carModelTextView)
+    TextView mCarModelTextView;
+
+    @BindView(R.id.plateNumberTextView)
+    TextView mPlateNumberTextView;
+
+    @BindView(R.id.sevenElevenImageView)
+    ImageView mSevenElevenImageView;
+
+    @BindView(R.id.lbcImageView)
+    ImageView mLbcImageView;
+
     private Transaction mTransaction;
     private Payment mPayment;
     private TransactionPresenter mTransactionPresenter;
     private PaymentPresenter mPaymentPresenter;
+    private DriverPresenter mDriverPresenter;
 
     public static Intent newIntent(Context context, Transaction transaction) {
         Intent intent = new Intent(context, TransactionDetailsActivity.class);
@@ -100,12 +121,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                startActivity(TransactionsHistoryActivity.newIntent(mContext));
                 finish();
-                return true;
-            case R.id.viewOffers:
-                Intent intent = OffersActivity.newIntent(mContext, mTransaction);
-                startActivity(intent);
                 return true;
         }
         return false;
@@ -132,20 +148,21 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
     }
 
     @Override
-    public void onTransactionStatusUpdateSuccess() {
+    public void onTransactionStatusUpdateSuccess(Transaction transaction) {
         startActivity(TransactionsHistoryActivity.newIntent(mContext));
         finish();
     }
 
     @Override
     public void onTransactionStatusUpdateError() {
-        Toast.makeText(mContext, "There is problem connecting to the server. PLease try again.", Toast.LENGTH_LONG).show();
+        Toast.makeText(mContext, "There is problem connecting to the server. Please try again.", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onGetPaymentSuccess(Payment payment) {
         mPayment = payment;
         initialize();
+        mDriverPresenter.getDriverProfile(mTransaction.getOfferAccepted().getDriverID());
     }
 
     @Override
@@ -180,11 +197,17 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         mDestinationDateTextView.setText(simpleDateFormat.format(mTransaction.getEndDate()));
         Log.e(TAG, "initialize: " + mPayment );
         mCostTextView.setText(String.valueOf(mPayment.getTotalAmount()));
+
+        mCarModelTextView.setText(mTransaction.getOfferAccepted().getCar().getCarModel());
+        mPlateNumberTextView.setText(mTransaction.getOfferAccepted().getCar().getPlateNumber());
+
+
     }
 
     private void initializePresenter() {
         mTransactionPresenter = new TransactionPresenter(mContext, this);
         mPaymentPresenter = new PaymentPresenter(mContext, this);
+        mDriverPresenter = new DriverPresenter(mContext, this);
     }
 
     @OnClick(R.id.cancelBookButton)
@@ -205,6 +228,16 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
                         dialog.dismiss();
                     }
                 });
+
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+        mOwnerTextView.setText(driver.getFirstName() +" " + driver.getLastName());
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
 
     }
 }

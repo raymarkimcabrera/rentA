@@ -9,8 +9,14 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/offersRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"/>
 
-
-    </android.support.v7.widget.RecyclerView>
+    <TextView
+        android:id="@+id/noOffersTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No Offers Available"
+        android:visibility="gone"
+        android:gravity="center"
+        android:layout_centerInParent="true"/>
 </RelativeLayout>

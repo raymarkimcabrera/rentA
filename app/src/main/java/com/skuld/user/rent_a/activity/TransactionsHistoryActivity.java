@@ -63,8 +63,10 @@ public class TransactionsHistoryActivity extends BaseActivity implements Transac
             @Override
             public void OnTransactionSelected(Transaction transaction) {
 //                Toast.makeText(mContext, transaction.getId(), Toast.LENGTH_SHORT).show();
-                startActivity(TransactionDetailsActivity.newIntent(mContext, transaction));
-                finish();
+                if (transaction.getOfferAccepted().getCar() != null)
+                    startActivity(TransactionDetailsActivity.newIntent(mContext, transaction));
+                else
+                    startActivity(OffersActivity.newIntent(mContext, transaction));
             }
         });
 
@@ -89,7 +91,7 @@ public class TransactionsHistoryActivity extends BaseActivity implements Transac
     }
 
     @Override
-    public void onTransactionStatusUpdateSuccess() {
+    public void onTransactionStatusUpdateSuccess(Transaction transaction) {
 
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
@@ -76,6 +77,11 @@ public class MessageListActivity extends BaseActivity implements MessageListView
     @Override
     public void onGetConversationError() {
 
+    }
+
+    @Override
+    public void onNoConversation() {
+        Toast.makeText(mContext, "There are no messages.", Toast.LENGTH_SHORT).show();
     }
 
     private void initPresenter() {

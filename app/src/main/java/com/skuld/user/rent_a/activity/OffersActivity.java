@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.skuld.user.rent_a.BaseActivity;
@@ -38,6 +40,9 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
     @BindView(R.id.offersRecyclerView)
     RecyclerView mOfferRecyclerView;
+
+    @BindView(R.id.noOffersTextView)
+    TextView mNoOffersTextView;
 
     private List<Transaction> mTransactionList;
     private List<Offer> mOffersList;
@@ -80,28 +85,35 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
     private void initialize() {
         mOffersList = new ArrayList<>(mTransaction.getOfferList());
+        if (mOffersList.size() == 0){
+            mNoOffersTextView.setVisibility(View.VISIBLE);
+            mOfferRecyclerView.setVisibility(View.GONE);
+            return;
+        }
         mOffersRecyclerViewAdapter = new OffersRecyclerViewAdapter(mContext, mOffersList, new OffersRecyclerViewAdapter.OnClickListener() {
             @Override
             public void onOfferSelected(final Offer offer) {
+                startActivity(OfferDetailsActivity.newIntent(mContext, mTransaction, offer));
 //                mTransaction.setCarID(car.getId());
 //                startActivity(OfferDetailsActivity.newIntent(mContext, mTransaction, car));
-                AlertDialog alertDialog = new AlertDialog.Builder(mContext)
-                        .setTitle("Select Offer")
-                        .setMessage("Do you accept this offer?")
-                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                mTransactionPresenter.acceptOffer(mTransaction, offer);
-                            }
-                        })
-                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        }).create();
-                alertDialog.show();
+//                AlertDialog alertDialog = new AlertDialog.Builder(mContext)
+//                        .setTitle("Select Offer")
+//                        .setMessage("Do you accept this offer?")
+//                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+////                                mTransactionPresenter.acceptOffer(mTransaction, offer);
+//                                startActivity(OfferDetailsActivity.newIntent(mContext, mTransaction, offer));
+//                            }
+//                        })
+//                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                dialog.dismiss();
+//                            }
+//                        }).create();
+//                alertDialog.show();
             }
         });
 
@@ -152,6 +164,16 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
     }
 
     @Override
+    public void onGetReviewsSuccess(List<Transaction> transactions) {
+
+    }
+
+    @Override
+    public void onGetReviewsError() {
+
+    }
+
+    @Override
     public void onGetTransactionViewSuccess(List<Transaction> transactionList) {
         mTransactionList = transactionList;
         mOffersPresenter.getOffers();
@@ -159,7 +181,7 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
     @Override
     public void onNoTransaction() {
-        mOffersPresenter.getOffers();
+
     }
 
     @Override
@@ -168,7 +190,7 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
     }
 
     @Override
-    public void onTransactionStatusUpdateSuccess() {
+    public void onTransactionStatusUpdateSuccess(Transaction transaction) {
 
     }
 

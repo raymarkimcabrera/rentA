@@ -112,14 +112,14 @@ public class TransactionPresenter extends BasePresenter {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         hideProgressDialog();
-                                        mTransactionView.onTransactionStatusUpdateSuccess();
+                                        mTransactionView.onTransactionStatusUpdateSuccess(new Transaction());
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         hideProgressDialog();
-                                        mTransactionView.onTransactionStatusUpdateSuccess();
+                                        mTransactionView.onTransactionStatusUpdateError();
                                     }
                                 });
                     }
@@ -185,7 +185,7 @@ public class TransactionPresenter extends BasePresenter {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
                                                                                         hideProgressDialog();
-                                                                                        mTransactionView.onTransactionStatusUpdateSuccess();
+                                                                                        mTransactionView.onTransactionStatusUpdateSuccess(transaction);
                                                                                     }
                                                                                 })
                                                                                 .addOnFailureListener(new OnFailureListener() {
