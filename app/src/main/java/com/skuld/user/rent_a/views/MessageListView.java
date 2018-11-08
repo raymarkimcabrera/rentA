@@ -9,4 +9,7 @@ public interface MessageListView {
     void onGetConversationSuccess(MessageList messageLists);
     void onGetConversationError();
     void onNoConversation();
+
+    void onMessageSent();
+    void onMessageNotSent();
 }

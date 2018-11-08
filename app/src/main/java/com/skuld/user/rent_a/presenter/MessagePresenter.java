@@ -36,7 +36,7 @@ public class MessagePresenter extends BasePresenter {
         showProgressDialog(mContext);
 
         initFirebase();
-
+        Log.e("", "getConversationList: USER_ID" + userID);
         Query getAllTransaction = mFirebaseFirestore.collection("transaction").whereEqualTo("userID", userID);
 
         getAllTransaction.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -44,17 +44,15 @@ public class MessagePresenter extends BasePresenter {
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
                 if (queryDocumentSnapshots.getDocuments().size() > 0) {
-                    for (final DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                    for (final DocumentSnapshot documentSnapshot : queryDocumentSnapshots.getDocuments()) {
                         Transaction transaction = documentSnapshot.toObject(Transaction.class);
 
                         initFirebase();
-                        Log.e("MESSAGE_ID", transaction.getConversationID());
                         mFirebaseFirestore.collection("messages").document(transaction.getConversationID()).get()
                                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
                                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                                         MessageList message = documentSnapshot.toObject(MessageList.class);
-                                        Log.e("TASK_MESSAGE_LIST",message.getId());
 
                                         messageListView.onGetConversationSuccess(message);
                                     }
@@ -63,11 +61,11 @@ public class MessagePresenter extends BasePresenter {
                                     @Override
                                     public void onFailure(@NonNull Exception e) {
                                         hideProgressDialog();
-                                        Log.e("onFailure", "onFailure: " + e.getMessage() );
+                                        Log.e("onFailure", "onFailure: " + e.getMessage());
                                         messageListView.onGetConversationError();
                                     }
                                 });
-                        if (messageList.size() > 0){
+                        if (messageList.size() > 0) {
                             Log.e("Message_List", messageList.size() + "");
                         }
                     }
@@ -86,9 +84,55 @@ public class MessagePresenter extends BasePresenter {
             @Override
             public void onFailure(@NonNull Exception e) {
                 hideProgressDialog();
-                Log.e("onFailure", "onFailure: " + e.getMessage() );
+                Log.e("onFailure", "onFailure: " + e.getMessage());
                 messageListView.onGetConversationError();
             }
         });
+    }
+
+    public void getConversation(String userID) {
+
+        initFirebase();
+
+        mFirebaseFirestore.collection("messages").document(userID).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        MessageList message = documentSnapshot.toObject(MessageList.class);
+                        messageListView.onGetConversationSuccess(message);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("onFailure", "onFailure: " + e.getMessage());
+                        messageListView.onGetConversationError();
+                    }
+                });
+
+    }
+
+    public void sendMessage(MessageList messageList, Message message) {
+        showProgressDialog(mContext);
+
+        messageList.getThread().add(message);
+        initFirebase();
+
+        mFirebaseFirestore.collection("messages").document(messageList.getId())
+                .set(messageList)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        hideProgressDialog();
+                        messageListView.onMessageSent();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressDialog();
+                        messageListView.onMessageNotSent();
+                    }
+                });
     }
 }

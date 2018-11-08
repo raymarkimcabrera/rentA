@@ -102,5 +102,7 @@ dependencies {
 
     //Material Calendar View
     implementation 'com.applandeo:material-calendar-view:1.4.0'
+
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.1.Final'
 }
 apply plugin: 'com.google.gms.google-services'

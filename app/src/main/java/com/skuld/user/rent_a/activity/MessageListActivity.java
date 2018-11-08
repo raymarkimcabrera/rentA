@@ -61,10 +61,13 @@ public class MessageListActivity extends BaseActivity implements MessageListView
 
         mMessageLists.add(messageList);
 
-        for (MessageList messageList1: mMessageLists){
-            Log.i("onGetConversation", "onGetConversationSuccess: " + messageList1.getId());
-        }
-        MessageRecyclerViewAdapter messageRecyclerViewAdapter = new MessageRecyclerViewAdapter(mContext, mMessageLists);
+        MessageRecyclerViewAdapter messageRecyclerViewAdapter = new MessageRecyclerViewAdapter(mContext, mMessageLists,
+                new MessageRecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(MessageList messageList) {
+                        startActivity(MessagesActivity.newIntent(mContext, messageList));
+                    }
+                });
 
         mMessageRecyclerView.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(mContext);
@@ -72,6 +75,8 @@ public class MessageListActivity extends BaseActivity implements MessageListView
         mMessageRecyclerView.setLayoutManager(llm);
         mMessageRecyclerView.setAdapter(messageRecyclerViewAdapter);
         messageRecyclerViewAdapter.notifyDataSetChanged();
+
+        Log.e("ITEM_COUNT", "onGetConversationSuccess: " + messageRecyclerViewAdapter.getItemCount() );
     }
 
     @Override
@@ -82,6 +87,16 @@ public class MessageListActivity extends BaseActivity implements MessageListView
     @Override
     public void onNoConversation() {
         Toast.makeText(mContext, "There are no messages.", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMessageSent() {
+
+    }
+
+    @Override
+    public void onMessageNotSent() {
+
     }
 
     private void initPresenter() {

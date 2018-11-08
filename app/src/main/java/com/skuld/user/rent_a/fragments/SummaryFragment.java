@@ -110,7 +110,7 @@ public class SummaryFragment extends Fragment implements TransactionView, Driver
         initPresenter();
 
         getArgs();
-
+        mDriverPresenter.getDriverProfile(mOffer.getDriverID());
         initUi();
 
         return view;

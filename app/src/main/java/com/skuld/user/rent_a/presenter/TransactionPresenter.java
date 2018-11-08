@@ -2,6 +2,7 @@ package com.skuld.user.rent_a.presenter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -11,11 +12,13 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.skuld.user.rent_a.model.car.Car;
 import com.skuld.user.rent_a.model.conversation.Message;
 import com.skuld.user.rent_a.model.conversation.MessageList;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.views.TransactionView;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TransactionPresenter extends BasePresenter {
@@ -153,39 +156,74 @@ public class TransactionPresenter extends BasePresenter {
                 .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        MessageList messageList = new MessageList();
-                        List<Message> messages = new ArrayList<>();
+                        final MessageList messageList = new MessageList();
+                        final List<Message> messages = new ArrayList<>();
+                        final Message userMessage = new Message();
+                        final Message driverMessage = new Message();
 
                         messageList.setId(documentSnapshot.getId());
-                        messageList.setThread(messages);
                         transaction.setConversationID(documentSnapshot.getId());
 
-                        mFirebaseFirestore.collection("messages")
-                                .document(messageList.getId())
-                                .set(messageList)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                        userMessage.setSenderID(transaction.getUserID());
+                        userMessage.setContent("");
+                        userMessage.setSenderName("You");
+                        userMessage.setCreatedAt(new Date(System.currentTimeMillis()));
 
-                                        mFirebaseFirestore.collection("transaction").document(transaction.getId())
-                                                .set(transaction)
+
+                        mFirebaseFirestore.collection("drivers").document(transaction.getOfferAccepted().getDriverID())
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        Driver driver = documentSnapshot.toObject(Driver.class);
+                                        driverMessage.setSenderName(driver.getFirstName() + " " + driver.getLastName());
+                                        driverMessage.setCreatedAt(new Date(System.currentTimeMillis()));
+                                        driverMessage.setContent("");
+                                        driverMessage.setSenderID(transaction.getOfferAccepted().getDriverID());
+
+                                        messages.add(userMessage);
+                                        messages.add(driverMessage);
+
+
+                                        messageList.setThread(messages);
+
+
+                                        Log.e("messages", "onSuccess: " + messageList.getId() );
+                                        mFirebaseFirestore.collection("messages")
+                                                .document(messageList.getId())
+                                                .set(messageList)
                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                     @Override
                                                     public void onSuccess(Void aVoid) {
 
-                                                        mFirebaseFirestore.collection("payment").document(transaction.getPaymentID())
-                                                                .update("status", "PENDING")
+                                                        mFirebaseFirestore.collection("transaction").document(transaction.getId())
+                                                                .set(transaction)
                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                     @Override
                                                                     public void onSuccess(Void aVoid) {
 
-                                                                        mFirebaseFirestore.collection("car").document(car.getId())
-                                                                                .set(car)
+                                                                        mFirebaseFirestore.collection("payment").document(transaction.getPaymentID())
+                                                                                .update("status", "PENDING")
                                                                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                                                                     @Override
                                                                                     public void onSuccess(Void aVoid) {
-                                                                                        hideProgressDialog();
-                                                                                        mTransactionView.onTransactionStatusUpdateSuccess(transaction);
+
+                                                                                        mFirebaseFirestore.collection("car").document(car.getId())
+                                                                                                .set(car)
+                                                                                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                                                                    @Override
+                                                                                                    public void onSuccess(Void aVoid) {
+                                                                                                        hideProgressDialog();
+                                                                                                        mTransactionView.onTransactionStatusUpdateSuccess(transaction);
+                                                                                                    }
+                                                                                                })
+                                                                                                .addOnFailureListener(new OnFailureListener() {
+                                                                                                    @Override
+                                                                                                    public void onFailure(@NonNull Exception e) {
+                                                                                                        hideProgressDialog();
+                                                                                                        mTransactionView.onTransactionStatusUpdateError();
+                                                                                                    }
+                                                                                                });
                                                                                     }
                                                                                 })
                                                                                 .addOnFailureListener(new OnFailureListener() {
