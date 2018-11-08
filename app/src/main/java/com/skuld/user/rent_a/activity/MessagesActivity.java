@@ -11,14 +11,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.conversation.Message;
 import com.skuld.user.rent_a.model.conversation.MessageList;
+import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.presenter.MessagePresenter;
+import com.skuld.user.rent_a.presenter.UsersPresenter;
 import com.skuld.user.rent_a.utils.Preferences;
 import com.skuld.user.rent_a.views.MessageListView;
+import com.skuld.user.rent_a.views.UsersView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -27,7 +31,7 @@ import java.util.Date;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-public class MessagesActivity extends BaseActivity implements MessageListView {
+public class MessagesActivity extends BaseActivity implements MessageListView, UsersView {
 
     @BindView(R.id.messagesLinearLayout)
     LinearLayout mMessagesLinearLayout;
@@ -37,6 +41,7 @@ public class MessagesActivity extends BaseActivity implements MessageListView {
 
     private MessageList mMessageList;
     private MessagePresenter mMessagePresenter;
+    private UsersPresenter mUsersPresenter;
 
 
     @Override
@@ -66,6 +71,7 @@ public class MessagesActivity extends BaseActivity implements MessageListView {
 
     private void initPresenter() {
         mMessagePresenter = new MessagePresenter(mContext, this);
+        mUsersPresenter = new UsersPresenter(mContext, this);
     }
 
     public static Intent newIntent(Context context, MessageList messageList) {
@@ -147,6 +153,11 @@ public class MessagesActivity extends BaseActivity implements MessageListView {
 
     @OnClick(R.id.sendImageView)
     void onClick() {
+        mUsersPresenter.getUserProfile(Preferences.getString(mContext, Preferences.USER_ID));
+    }
+
+    @Override
+    public void onGetUserSuccess(User user) {
         String message = mTextMessageEditText.getText().toString();
         Date currentDate = new Date(System.currentTimeMillis());
         String userId = Preferences.getString(mContext, Preferences.USER_ID);
@@ -156,9 +167,14 @@ public class MessagesActivity extends BaseActivity implements MessageListView {
         messageBody.setContent(message);
         messageBody.setSenderID(userId);
         messageBody.setCreatedAt(currentDate);
-        messageBody.setSenderName("You");
+        messageBody.setSenderName(user.getFirstName() +" "+ user.getLastName());
 
         mMessagePresenter.sendMessage(mMessageList, messageBody);
 
+    }
+
+    @Override
+    public void onGetUserError() {
+        Toast.makeText(mContext, "Failed to connect to server. Please try again.", Toast.LENGTH_SHORT).show();
     }
 }
