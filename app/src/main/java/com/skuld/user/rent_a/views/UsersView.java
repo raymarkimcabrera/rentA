@@ -7,4 +7,9 @@ public interface UsersView {
     void onGetUserSuccess(User user);
 
     void onGetUserError();
+
+    void onUserUpdateSuccess();
+
+    void onUserUpdateError();
+
 }

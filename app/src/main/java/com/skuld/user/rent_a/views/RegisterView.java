@@ -4,7 +4,7 @@ import com.google.firebase.firestore.DocumentReference;
 
 public interface RegisterView {
 
-    void onRegisterSuccess(DocumentReference documentReference);
+    void onRegisterSuccess();
 
     void onRegisterFailed(String message);
 }

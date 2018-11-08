@@ -177,4 +177,14 @@ public class MessagesActivity extends BaseActivity implements MessageListView, U
     public void onGetUserError() {
         Toast.makeText(mContext, "Failed to connect to server. Please try again.", Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void onUserUpdateSuccess() {
+
+    }
+
+    @Override
+    public void onUserUpdateError() {
+
+    }
 }

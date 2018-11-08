@@ -4,10 +4,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 
 class BasePresenter {
+
     ProgressDialog progressDialog;
     protected FirebaseFirestore mFirebaseFirestore;
+    protected FirebaseStorage mFirebaseStorage;
 
     void showProgressDialog(Context context) {
         if (progressDialog == null){
@@ -27,5 +30,9 @@ class BasePresenter {
 
     void initFirebase(){
         mFirebaseFirestore = FirebaseFirestore.getInstance();
+    }
+
+    void initFireStorage(){
+        mFirebaseStorage = FirebaseStorage.getInstance();
     }
 }

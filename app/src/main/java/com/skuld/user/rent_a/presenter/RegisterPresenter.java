@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -62,17 +63,35 @@ public class RegisterPresenter extends BasePresenter {
         checkEmailIfUsed.get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if (queryDocumentSnapshots.getDocuments().size() !=0){
+                if (queryDocumentSnapshots.getDocuments().size() != 0) {
                     hideProgressDialog();
                     mRegisterView.onRegisterFailed("The email you registered is already used");
                 } else {
                     mFirebaseFirestore.collection("users")
-                            .add(user)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            .document()
+                            .get()
+                            .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                 @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    hideProgressDialog();
-                                    mRegisterView.onRegisterSuccess(documentReference);
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    user.setId(documentSnapshot.getId());
+                                    mFirebaseFirestore.collection("users")
+                                            .document(documentSnapshot.getId())
+                                            .set(user)
+                                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    hideProgressDialog();
+                                                    mRegisterView.onRegisterSuccess();
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e) {
+                                                    hideProgressDialog();
+                                                    mRegisterView.onRegisterFailed(e.getMessage());
+                                                }
+                                            });
+
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {

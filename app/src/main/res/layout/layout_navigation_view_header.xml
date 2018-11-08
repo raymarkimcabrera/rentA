@@ -1,23 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@color/colorAccent">
+    android:layout_height="190dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorAccent"
+    android:gravity="bottom">
 
     <LinearLayout
+        android:id="@+id/userLinearLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="100sp"
         android:orientation="horizontal"
         android:padding="10dp">
 
-        <ImageView
-            android:src="@mipmap/ic_launcher"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/userImageView"
+            android:src="@mipmap/ic_launcher_round"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:scaleType="centerInside"
-            android:contentDescription="Profile Picture"/>
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/lightGray"/>
 
         <TextView
+            android:id="@+id/userTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -28,4 +33,4 @@
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

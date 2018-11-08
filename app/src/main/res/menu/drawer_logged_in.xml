@@ -30,6 +30,11 @@
         <item
             android:id="@+id/menuSettings"
             android:title="@string/settings"/>
+
+        <item
+            android:id="@+id/menuDriveWithRentA"
+            android:title="@string/drive_with_rent_a"/>
+
         <item
             android:id="@+id/menuLogout"
             android:title="Logout"/>

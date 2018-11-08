@@ -69,6 +69,16 @@ public class ReviewsRecyclerViewAdapter extends RecyclerView.Adapter<ReviewsRecy
         Log.e("onGetUserError", "onGetUserError: " );
     }
 
+    @Override
+    public void onUserUpdateSuccess() {
+
+    }
+
+    @Override
+    public void onUserUpdateError() {
+
+    }
+
     public class ReviewsViewHolder extends RecyclerView.ViewHolder{
 
         @BindView(R.id.userImageView)

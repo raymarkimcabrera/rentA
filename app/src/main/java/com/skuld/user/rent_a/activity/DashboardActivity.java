@@ -14,6 +14,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,9 +47,14 @@ import com.skuld.user.rent_a.dialog.FindAVehicleDialog;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.presenter.SummaryPresenter;
+import com.skuld.user.rent_a.presenter.UsersPresenter;
+import com.skuld.user.rent_a.utils.ImageUtil;
 import com.skuld.user.rent_a.utils.ModelUtil;
+import com.skuld.user.rent_a.utils.Preferences;
 import com.skuld.user.rent_a.views.SummaryView;
+import com.skuld.user.rent_a.views.UsersView;
 
 import org.w3c.dom.Text;
 
@@ -57,8 +65,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener, RouteManager.Listener, FindAVehicleDialog.OnClickListener, SummaryView {
+public class DashboardActivity extends BaseActivity implements OnEngineInitListener, PositioningManager.OnPositionChangedListener,
+        RouteManager.Listener,
+        FindAVehicleDialog.OnClickListener,
+        SummaryView,
+        UsersView {
 
     private static final String TAG = DashboardActivity.class.getSimpleName();
 
@@ -97,6 +110,10 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     private int mYear, mMonth, mDay;
     private Transaction mTransaction;
     private SummaryPresenter mSummaryPresenter;
+    private UsersPresenter mUserPresenter;
+
+    private TextView mHeaderTitleTextView;
+    private CircleImageView mHeaderImageView;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, DashboardActivity.class);
@@ -129,6 +146,8 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     protected void onResume() {
         super.onResume();
+        mUserPresenter.getUserProfile(Preferences.getString(mContext, Preferences.USER_ID));
+
         statusCheck();
         paused = false;
         if (posManager != null) {
@@ -275,7 +294,7 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                mDrawerLayout.closeDrawer(GravityCompat.START);
+                mDrawerLayout.closeDrawers();
 
                 switch (menuItem.getItemId()) {
                     case R.id.menuItemHome:
@@ -288,19 +307,44 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                         startActivity(TransactionsHistoryActivity.newIntent(mContext));
                         return true;
                 }
-                mDrawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
 
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.drawer_opened, R.string.drawer_closed) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
+                super.onDrawerClosed(drawerView);
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
+
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
+        actionBarDrawerToggle.syncState();
         Menu menu = mNavigationView.getMenu();
         MenuItem appVersion = menu.findItem(R.id.menuAppVersion);
         appVersion.setTitle("Version " + BuildConfig.VERSION_NAME);
-
+        View headerView = mNavigationView.getHeaderView(0);
+        mHeaderTitleTextView = (TextView) headerView.findViewById(R.id.userTextView);
+        mHeaderImageView = (CircleImageView) headerView.findViewById(R.id.userImageView);
+        LinearLayout userLinearLayout = (LinearLayout) headerView.findViewById(R.id.userLinearLayout);
+        userLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(ProfileActivity.newIntent(mContext));
+            }
+        });
     }
 
-    private void initializePresenter(){
+    private void initializePresenter() {
         mSummaryPresenter = new SummaryPresenter(mContext, this);
+        mUserPresenter = new UsersPresenter(mContext, this);
     }
 
     private void initializeMaps() {
@@ -442,7 +486,6 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     public void onSubmit(Transaction transaction) {
         mSummaryPresenter.bookTransaction(transaction);
-//        startActivity(OffersActivity.newIntent(mContext, transaction));
     }
 
     @Override
@@ -454,6 +497,28 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
     @Override
     public void onBookingError() {
         Toast.makeText(mContext, "Booking failed", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onGetUserSuccess(User user) {
+        mHeaderTitleTextView.setText(user.getFirstName() + " " + user.getLastName());
+        if (!user.getImageUrl().isEmpty())
+            ImageUtil.loadImageFromUrl(mContext, mHeaderImageView, user.getImageUrl());
+    }
+
+    @Override
+    public void onGetUserError() {
+
+    }
+
+    @Override
+    public void onUserUpdateSuccess() {
+
+    }
+
+    @Override
+    public void onUserUpdateError() {
+
     }
 }
 
