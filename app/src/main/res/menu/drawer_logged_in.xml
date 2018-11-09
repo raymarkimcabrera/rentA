@@ -16,7 +16,7 @@
 
         <item
             android:id="@+id/menuHistory"
-            android:title="@string/history"/>
+            android:title="Offers"/>
 
         <item
             android:id="@+id/menuSchedule"
