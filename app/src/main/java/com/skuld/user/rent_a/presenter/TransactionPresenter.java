@@ -27,9 +27,35 @@ public class TransactionPresenter extends BasePresenter {
     private TransactionView mTransactionView;
     private List<Transaction> mTransactionList;
 
-    public TransactionPresenter(Context mContext, TransactionView mTransactionView) {
-        this.mContext = mContext;
-        this.mTransactionView = mTransactionView;
+    public TransactionPresenter(Context context, TransactionView transactionView) {
+        this.mContext = context;
+        this.mTransactionView = transactionView;
+    }
+
+    public void getTransactionById(String id) {
+
+        initFirebase();
+
+        showProgressDialog(mContext);
+
+        mFirebaseFirestore.collection("transaction")
+                .document(id)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        hideProgressDialog();
+                        mTransactionView.onGetTransaction(documentSnapshot.toObject(Transaction.class));
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        hideProgressDialog();
+                        mTransactionView.onGetTransactionError();
+                    }
+                });
+
     }
 
     public void getTransactions() {

@@ -304,6 +304,9 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
                     case R.id.menuMessages:
                         startActivity(MessageListActivity.newIntent(mContext));
                         return true;
+                    case R.id.menuSchedule:
+                        startActivity(ScheduleActivity.newIntent(mContext));
+                        return true;
                     case R.id.menuHistory:
                         startActivity(TransactionsHistoryActivity.newIntent(mContext));
                         return true;

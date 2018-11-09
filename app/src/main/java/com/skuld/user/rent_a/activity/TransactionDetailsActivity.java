@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -101,7 +102,12 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
 
         initializePresenter();
         Log.e(TAG, "onCreate: " + mTransaction.getPaymentID() );
-        mPaymentPresenter.getPaymentByID(mTransaction.getPaymentID());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTransactionPresenter.getTransactionById(mTransaction.getId());
     }
 
     @Override
@@ -149,13 +155,23 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
 
     @Override
     public void onTransactionStatusUpdateSuccess(Transaction transaction) {
-        startActivity(TransactionsHistoryActivity.newIntent(mContext));
+        startActivity(ScheduleActivity.newIntent(mContext));
         finish();
     }
 
     @Override
     public void onTransactionStatusUpdateError() {
         Toast.makeText(mContext, "There is problem connecting to the server. Please try again.", Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onGetTransaction(Transaction transaction) {
+        mPaymentPresenter.getPaymentByID(transaction.getPaymentID());
+    }
+
+    @Override
+    public void onGetTransactionError() {
+
     }
 
     @Override
@@ -210,24 +226,36 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         mDriverPresenter = new DriverPresenter(mContext, this);
     }
 
-    @OnClick(R.id.cancelBookButton)
-    void onClick() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext)
-                .setTitle("Cancel Transaction")
-                .setMessage("Are you sure you want to cancel this transaction?")
-                .setPositiveButton("YES", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        mTransactionPresenter.updateTransactionStatusById(mTransaction, "CANCELLED");
-                    }
-                })
-                .setNegativeButton("NO", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
+    @OnClick({R.id.cancelBookButton, R.id.sevenElevenImageView, R.id.lbcImageView})
+    void onClick(View view) {
+        switch (view.getId()){
+            case R.id.cancelBookButton:
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext)
+                        .setTitle("Cancel Transaction")
+                        .setMessage("Are you sure you want to cancel this transaction?")
+                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                mTransactionPresenter.updateTransactionStatusById(mTransaction, "CANCELLED");
+                            }
+                        })
+                        .setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialog.create();
+                alertDialog.show();
+                break;
+
+            case R.id.sevenElevenImageView:
+            case R.id.lbcImageView:
+                mTransactionPresenter.updateTransactionStatusById(mTransaction, "PAID");
+                break;
+
+        }
 
     }
 

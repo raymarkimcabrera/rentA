@@ -26,8 +26,9 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
+
         <activity android:name=".activity.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -80,7 +81,8 @@
         <activity android:name=".activity.TransactionsHistoryActivity" />
         <activity android:name=".activity.TransactionDetailsActivity" />
         <activity android:name=".activity.MessageListActivity" />
-        <activity android:name=".activity.ProfileActivity"></activity>
+        <activity android:name=".activity.ProfileActivity" />
+        <activity android:name=".activity.ScheduleActivity"></activity>
     </application>
 
 </manifest>

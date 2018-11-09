@@ -100,5 +100,15 @@ public class TransactionsHistoryActivity extends BaseActivity implements Transac
 
     }
 
+    @Override
+    public void onGetTransaction(Transaction transaction) {
+
+    }
+
+    @Override
+    public void onGetTransactionError() {
+
+    }
+
 
 }

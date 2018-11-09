@@ -199,5 +199,15 @@ public class OffersActivity extends BaseActivity implements OffersView, Transact
 
     }
 
+    @Override
+    public void onGetTransaction(Transaction transaction) {
+
+    }
+
+    @Override
+    public void onGetTransactionError() {
+
+    }
+
 
 }

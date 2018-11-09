@@ -84,6 +84,12 @@ public class DateUtil {
         return calendar;
     }
 
+    public static Calendar convertDateToCalendar(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar;
+    }
+
     public static String getMonthString(int month) {
         return new DateFormatSymbols().getMonths()[month - 1];
     }

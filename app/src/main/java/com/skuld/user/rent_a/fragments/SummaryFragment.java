@@ -205,6 +205,16 @@ public class SummaryFragment extends Fragment implements TransactionView, Driver
     }
 
     @Override
+    public void onGetTransaction(Transaction transaction) {
+
+    }
+
+    @Override
+    public void onGetTransactionError() {
+
+    }
+
+    @Override
     public void onGetDriverProfileSuccess(Driver driver) {
         mOwnerTextView.setText(driver.getFirstName() +" "+ driver.getLastName());
         mCarModelTextView.setText(mOffer.getCar().getCarModel());
