@@ -134,7 +134,7 @@ public class AutoCompleteKeyboardActivity extends BaseActivity implements Locati
 
     @Override
     public void onBackPressed() {
-        backToPreviousActivity();
+        finish();
     }
 
     @Override

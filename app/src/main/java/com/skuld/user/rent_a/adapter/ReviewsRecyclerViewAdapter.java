@@ -48,9 +48,10 @@ public class ReviewsRecyclerViewAdapter extends RecyclerView.Adapter<ReviewsRecy
         final Transaction transaction = mTransactionList.get(position);
         mReviewViewHolder = holder;
         mUsersPresenter = new UsersPresenter(mContext, this);
-        mReviewViewHolder.mUserReviewTextView.setText(transaction.getRemarks());
+        mReviewViewHolder.mUserReviewTextView.setText("Good driving");
         Log.e("TRANSACTION_DETAILS", "onBindViewHolder: " + transaction.getId() + " / " + transaction.getUserID() );
-        mUsersPresenter.getUserProfile(transaction.getUserID());
+        mReviewViewHolder.mUserNameTextView.setText("Marcelino Bardelas");
+        mReviewViewHolder.mUserImageView.setImageResource(R.drawable.sample_user);
 
     }
 

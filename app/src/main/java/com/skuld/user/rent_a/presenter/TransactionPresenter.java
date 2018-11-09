@@ -15,6 +15,7 @@ import com.skuld.user.rent_a.model.conversation.MessageList;
 import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.offer.Offer;
 import com.skuld.user.rent_a.model.transaction.Transaction;
+import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.views.TransactionView;
 
 import java.util.ArrayList;
@@ -225,10 +226,26 @@ public class TransactionPresenter extends BasePresenter {
                         messageList.setId(documentSnapshot.getId());
                         transaction.setConversationID(documentSnapshot.getId());
 
-                        userMessage.setSenderID(transaction.getUserID());
-                        userMessage.setContent("");
-                        userMessage.setSenderName("You");
-                        userMessage.setCreatedAt(new Date(System.currentTimeMillis()));
+                        mFirebaseFirestore.collection("users")
+                                .document(transaction.getUserID())
+                                .get()
+                                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                        User user = documentSnapshot.toObject(User.class);
+                                        userMessage.setSenderID(transaction.getUserID());
+                                        userMessage.setContent("");
+                                        userMessage.setSenderName(user.getFirstName() + " "+ user.getLastName());
+                                        userMessage.setCreatedAt(new Date(System.currentTimeMillis()));
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+
+                                    }
+                                });
+
 
 
                         mFirebaseFirestore.collection("drivers").document(transaction.getOfferAccepted().getDriverID())

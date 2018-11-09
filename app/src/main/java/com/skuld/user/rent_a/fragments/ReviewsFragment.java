@@ -95,16 +95,20 @@ public class ReviewsFragment extends Fragment {
     private void getArgs() {
         if (getArguments() != null) {
             mTransactionList = new ArrayList<>();
+
             mReviewsList = (ArrayList<? extends Transaction>) getArguments().getSerializable("REVIEWS");
             mTransactionList.addAll(mReviewsList);
         }
 
-        Log.e("getArgs", "getArgs: " + mTransactionList.size() );
+        Log.e("getArgs", "getArgs: " + mTransactionList.size());
     }
 
-    private void initUI(){
-        if (mTransactionList.size() > 0){
-            ReviewsRecyclerViewAdapter reviewsRecyclerViewAdapter = new ReviewsRecyclerViewAdapter(mContext,mTransactionList);
+    private void initUI() {
+        Transaction transaction1 = new Transaction();
+        transaction1.setRemarks("Good driving");
+        mTransactionList.add(transaction1);
+        if (mTransactionList.size() > 0) {
+            ReviewsRecyclerViewAdapter reviewsRecyclerViewAdapter = new ReviewsRecyclerViewAdapter(mContext, mTransactionList);
             mReviewsRecyclerView.setHasFixedSize(true);
             LinearLayoutManager llm = new LinearLayoutManager(mContext);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -116,6 +120,7 @@ public class ReviewsFragment extends Fragment {
         }
 
     }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
