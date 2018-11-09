@@ -17,6 +17,7 @@ import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.conversation.Message;
 import com.skuld.user.rent_a.model.conversation.MessageList;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.presenter.MessagePresenter;
 import com.skuld.user.rent_a.presenter.UsersPresenter;
@@ -74,9 +75,10 @@ public class MessagesActivity extends BaseActivity implements MessageListView, U
         mUsersPresenter = new UsersPresenter(mContext, this);
     }
 
-    public static Intent newIntent(Context context, MessageList messageList) {
+    public static Intent newIntent(Context context, MessageList messageList, String title) {
         Intent intent = new Intent(context, MessagesActivity.class);
         intent.putExtra("THREAD", messageList);
+        intent.putExtra("TITLE", title);
         return intent;
     }
 
@@ -87,6 +89,8 @@ public class MessagesActivity extends BaseActivity implements MessageListView, U
 
     private void getArgs() {
         mMessageList = (MessageList) getIntent().getSerializableExtra("THREAD");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(getIntent().getStringExtra("TITLE"));
     }
 
     private void initUi() {
@@ -127,7 +131,9 @@ public class MessagesActivity extends BaseActivity implements MessageListView, U
 
     @Override
     public void onGetConversationSuccess(MessageList messageLists) {
+        mMessageList = messageLists;
         initUi();
+
     }
 
     @Override
@@ -185,6 +191,16 @@ public class MessagesActivity extends BaseActivity implements MessageListView, U
 
     @Override
     public void onUserUpdateError() {
+
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
 
     }
 }

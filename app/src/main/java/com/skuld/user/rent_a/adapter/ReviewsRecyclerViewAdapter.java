@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.presenter.UsersPresenter;
@@ -76,6 +77,16 @@ public class ReviewsRecyclerViewAdapter extends RecyclerView.Adapter<ReviewsRecy
 
     @Override
     public void onUserUpdateError() {
+
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
 
     }
 

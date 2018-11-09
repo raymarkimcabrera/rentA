@@ -44,6 +44,7 @@ import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.BuildConfig;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.dialog.FindAVehicleDialog;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.reverse_geocoder.DisplayPosition;
 import com.skuld.user.rent_a.model.reverse_geocoder.Locations;
 import com.skuld.user.rent_a.model.transaction.Transaction;
@@ -518,6 +519,16 @@ public class DashboardActivity extends BaseActivity implements OnEngineInitListe
 
     @Override
     public void onUserUpdateError() {
+
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
 
     }
 }

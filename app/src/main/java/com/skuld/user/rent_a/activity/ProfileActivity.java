@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.skuld.user.rent_a.BaseActivity;
 import com.skuld.user.rent_a.R;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.presenter.UsersPresenter;
 import com.skuld.user.rent_a.utils.FileUtil;
@@ -145,6 +146,16 @@ public class ProfileActivity extends BaseActivity implements UsersView {
 
     @Override
     public void onUserUpdateError() {
+
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
 
     }
 

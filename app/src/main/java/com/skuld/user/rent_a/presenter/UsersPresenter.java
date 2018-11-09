@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.skuld.user.rent_a.model.driver.Driver;
 import com.skuld.user.rent_a.model.user.User;
 import com.skuld.user.rent_a.utils.Preferences;
 import com.skuld.user.rent_a.views.UsersView;
@@ -54,6 +55,32 @@ public class UsersPresenter extends BasePresenter {
                         hideProgressDialog();
                         Log.e("onGetUserError", "onFailure: ");
                         mUsersView.onGetUserError();
+                    }
+                });
+    }
+
+    public void getDriverProfile(String id) {
+//        showProgressDialog(mContext);
+
+        initFirebase();
+
+        mFirebaseFirestore.collection("drivers").document(id)
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+//                        hideProgressDialog();
+
+                        Driver driver = documentSnapshot.toObject(Driver.class);
+                        mUsersView.onGetDriverProfileSuccess(driver);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+//                        hideProgressDialog();
+                        Log.e("onGetUserError", "onFailure: ");
+                        mUsersView.onGetDriverProfileError();
                     }
                 });
     }

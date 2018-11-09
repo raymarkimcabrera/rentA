@@ -14,7 +14,12 @@ import android.widget.TextView;
 import com.skuld.user.rent_a.R;
 import com.skuld.user.rent_a.model.conversation.Message;
 import com.skuld.user.rent_a.model.conversation.MessageList;
+import com.skuld.user.rent_a.model.driver.Driver;
+import com.skuld.user.rent_a.model.user.User;
+import com.skuld.user.rent_a.presenter.UsersPresenter;
+import com.skuld.user.rent_a.utils.ImageUtil;
 import com.skuld.user.rent_a.utils.Preferences;
+import com.skuld.user.rent_a.views.UsersView;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -23,12 +28,15 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.MessageViewHolder>{
+public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecyclerViewAdapter.MessageViewHolder> implements UsersView {
 
     private List<MessageList> mMessageLists;
     private Context mContext;
     private OnItemClickListener mOnItemClickListener;
+    private UsersPresenter mUserPresenter;
+    private MessageViewHolder mMessageViewHolder;
 
     public MessageRecyclerViewAdapter(Context context, List<MessageList> messageLists, OnItemClickListener onItemClickListener) {
         this.mMessageLists = messageLists;
@@ -37,7 +45,7 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     }
 
     public interface OnItemClickListener{
-        void onItemClicked(MessageList messageList);
+        void onItemClicked(MessageList messageList, String title);
     }
     @NonNull
     @Override
@@ -50,17 +58,26 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+        mMessageViewHolder = holder;
         final MessageList messageList = mMessageLists.get(position);
+
+        mUserPresenter = new UsersPresenter(mContext, this);
 
         int latestMessageIndex = messageList.getThread().size() - 1;
         String driverName = "";
+        String userID = "";
 
         for(Message message : messageList.getThread()){
             if (!message.getSenderID().equals(Preferences.getString(mContext, Preferences.USER_ID))){
                 driverName = message.getSenderName();
+                userID = message.getSenderID();
             }
         }
+
+        mUserPresenter.getDriverProfile(userID);
+
         holder.mDriverTextView.setText(driverName);
+        final String title = driverName;
         PrettyTime prettyTime = new PrettyTime();
         holder.mLastUpdateTextView.setText(prettyTime.format(messageList.getThread().get(latestMessageIndex).getCreatedAt()));
         holder.mMessageSummaryTextView.setText(messageList.getThread().get(latestMessageIndex).getContent());
@@ -68,7 +85,7 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         holder.mMessageLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mOnItemClickListener.onItemClicked(messageList);
+                mOnItemClickListener.onItemClicked(messageList, title);
             }
         });
     }
@@ -76,6 +93,11 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
     @Override
     public int getItemCount() {
         return mMessageLists.size();
+    }
+
+    public void updateItems(List<MessageList> messageList){
+        this.mMessageLists = messageList;
+        notifyDataSetChanged();
     }
 
     public class MessageViewHolder extends RecyclerView.ViewHolder {
@@ -93,10 +115,43 @@ public class MessageRecyclerViewAdapter extends RecyclerView.Adapter<MessageRecy
         LinearLayout mMessageLinearLayout;
 
         @BindView(R.id.messageImageVIew)
-        ImageView mMessageImageView;
+        CircleImageView mMessageImageView;
         public MessageViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
     }
+
+
+    @Override
+    public void onGetUserSuccess(User user) {
+
+    }
+
+    @Override
+    public void onGetUserError() {
+
+    }
+
+    @Override
+    public void onUserUpdateSuccess() {
+
+    }
+
+    @Override
+    public void onUserUpdateError() {
+
+    }
+
+    @Override
+    public void onGetDriverProfileSuccess(Driver driver) {
+        if (!driver.getImageUrl().isEmpty())
+            ImageUtil.loadImageFromUrl(mContext, mMessageViewHolder.mMessageImageView, driver.getImageUrl());
+    }
+
+    @Override
+    public void onGetDriverProfileError() {
+
+    }
+
 }

@@ -28,6 +28,7 @@ public class MessageListActivity extends BaseActivity implements MessageListView
 
     private MessagePresenter mMessagePresenter;
     private List<MessageList> mMessageLists;
+    private MessageRecyclerViewAdapter mMessageRecyclerViewAdapter;
 
     public static Intent newIntent(Context context) {
         Intent intent = new Intent(context, MessageListActivity.class);
@@ -41,6 +42,20 @@ public class MessageListActivity extends BaseActivity implements MessageListView
         mContext = this;
 
         initPresenter();
+
+        mMessageRecyclerViewAdapter = new MessageRecyclerViewAdapter(mContext, new ArrayList<MessageList>(),
+                new MessageRecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(MessageList messageList, String title) {
+                        startActivity(MessagesActivity.newIntent(mContext, messageList, title));
+                    }
+                });
+
+        mMessageRecyclerView.setHasFixedSize(true);
+        LinearLayoutManager llm = new LinearLayoutManager(mContext);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mMessageRecyclerView.setLayoutManager(llm);
+        mMessageRecyclerView.setAdapter(mMessageRecyclerViewAdapter);
 
     }
 
@@ -60,23 +75,7 @@ public class MessageListActivity extends BaseActivity implements MessageListView
     public void onGetConversationSuccess(MessageList messageList) {
 
         mMessageLists.add(messageList);
-
-        MessageRecyclerViewAdapter messageRecyclerViewAdapter = new MessageRecyclerViewAdapter(mContext, mMessageLists,
-                new MessageRecyclerViewAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClicked(MessageList messageList) {
-                        startActivity(MessagesActivity.newIntent(mContext, messageList));
-                    }
-                });
-
-        mMessageRecyclerView.setHasFixedSize(true);
-        LinearLayoutManager llm = new LinearLayoutManager(mContext);
-        llm.setOrientation(LinearLayoutManager.VERTICAL);
-        mMessageRecyclerView.setLayoutManager(llm);
-        mMessageRecyclerView.setAdapter(messageRecyclerViewAdapter);
-        messageRecyclerViewAdapter.notifyDataSetChanged();
-
-        Log.e("ITEM_COUNT", "onGetConversationSuccess: " + messageRecyclerViewAdapter.getItemCount() );
+        mMessageRecyclerViewAdapter.updateItems(mMessageLists);
     }
 
     @Override
