@@ -24,6 +24,7 @@ import com.skuld.user.rent_a.model.transaction.Transaction;
 import com.skuld.user.rent_a.presenter.DriverPresenter;
 import com.skuld.user.rent_a.presenter.PaymentPresenter;
 import com.skuld.user.rent_a.presenter.TransactionPresenter;
+import com.skuld.user.rent_a.utils.GeneralUtils;
 import com.skuld.user.rent_a.views.DriverView;
 import com.skuld.user.rent_a.views.PaymentView;
 import com.skuld.user.rent_a.views.TransactionView;
@@ -101,7 +102,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         initToolbar();
 
         initializePresenter();
-        Log.e(TAG, "onCreate: " + mTransaction.getPaymentID() );
+        Log.e(TAG, "onCreate: " + mTransaction.getPaymentID());
     }
 
     @Override
@@ -211,8 +212,8 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
         mSerialCodeTextView.setText(mTransaction.getId());
         mPickUpDateTextView.setText(simpleDateFormat.format(mTransaction.getStartDate()));
         mDestinationDateTextView.setText(simpleDateFormat.format(mTransaction.getEndDate()));
-        Log.e(TAG, "initialize: " + mPayment );
-        mCostTextView.setText(String.valueOf(mPayment.getTotalAmount()));
+        Log.e(TAG, "initialize: " + mPayment);
+        mCostTextView.setText(GeneralUtils.toPesoFormat(Double.parseDouble(String.valueOf(mTransaction.getOfferAccepted().getPrice()))));
 
         mCarModelTextView.setText(mTransaction.getOfferAccepted().getCar().getCarModel());
         mPlateNumberTextView.setText(mTransaction.getOfferAccepted().getCar().getPlateNumber());
@@ -228,7 +229,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
 
     @OnClick({R.id.cancelBookButton, R.id.sevenElevenImageView, R.id.lbcImageView})
     void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.cancelBookButton:
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext)
                         .setTitle("Cancel Transaction")
@@ -261,7 +262,7 @@ public class TransactionDetailsActivity extends BaseActivity implements Transact
 
     @Override
     public void onGetDriverProfileSuccess(Driver driver) {
-        mOwnerTextView.setText(driver.getFirstName() +" " + driver.getLastName());
+        mOwnerTextView.setText(driver.getFirstName() + " " + driver.getLastName());
     }
 
     @Override
