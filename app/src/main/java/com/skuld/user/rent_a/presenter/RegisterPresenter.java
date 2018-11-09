@@ -55,6 +55,8 @@ public class RegisterPresenter extends BasePresenter {
         user.setContactNumber(contactNumber);
         user.setPassword(password);
 
+        user.setImageUrl("");
+
         showProgressDialog(mContext);
 
         Query checkEmailIfUsed = mFirebaseFirestore.collection("users")
